@@ -1,0 +1,23 @@
+
+.content-secondary {
+  display: none;
+}
+
+@media screen and (orientation: portrait), screen and (max-width: 801px)
+{
+}
+
+@media screen and (min-width: 801px) and (orientation: landscape)
+{
+  .content-secondary {
+    display: block;
+    width: 30%;
+    float: left;
+    border-right: 1px solid #CCC;
+  }
+  
+  .content-primary {
+    width: 70%;
+    float: right;
+  }
+}
