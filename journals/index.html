@@ -17,6 +17,7 @@
     </script>
     <script src="../js/jquery.mobile-1.1.1.min.js"></script>
     <script src="../js/creoleParser.js"></script>
+    <script src="../js/date.format.js"></script>
     <script src="../js/helper.js"></script>
   </head>
     
@@ -27,12 +28,36 @@
 
       <header data-role="header" data-position="fixed">
 	<h1>EPOKO.journals</h1>
+	<a href="#add" data-rel="dialog" data-icon="plus" class="ui-btn-right">Add</a>
       </header>
 
       <section data-role="content">
 		<ul id="journalList" data-role="listview" data-filter="true" data-theme="c" data-dividertheme="c" data-filter-theme="c"></ul>
       </section>
 	
+    </div>
+
+    <div id="add" data-role="page">
+      <header>
+	<h1>Add Journal</h1>
+      </header>
+
+      <section data-role="content">
+	<form id="journal_add" accept-charset="ISO-8859-1">
+	
+	  <input name="BEGIN" value="VJOURNAL" type="hidden"/>
+	  <input name="STATUS" value="DRAFT" type="hidden"/>
+	  <input name="CLASS" value="PRIVATE" type="hidden"/>
+	  <input id="dtstart_add" name="DTSTART" type="hidden"/>
+	  
+	  <fieldset data-role="fieldcontain">
+	    <label for="summary_add">Title</label>
+	    <input id="summary_add" name="SUMMARY" type="text" data-mini="true"/>
+	  </fieldset>
+
+	</form>
+	<a href="#" data-role="button" data-rel="back" onClick="setDateTime($('#dtstart_add')); sendJournal($('#journal_add'));">OK</a>
+      </section>
     </div>
 
     <!-- Journal View -->
@@ -66,7 +91,7 @@
 
       <header data-role="header" data-position="fixed">
 	<h1>Edit Journal</h1>
-	<a href="javascript:sendJournal(); window.history.back();" data-icon="check" class="ui-btn-right">Save</a>
+	<a href="#" data-rel="back" data-icon="check" onClick="sendJournal($('#journal_edit'));" class="ui-btn-right">Save</a>
       </header>
 
       <section data-role="content"> 

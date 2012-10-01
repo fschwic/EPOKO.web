@@ -1,10 +1,15 @@
 $('#edit').on('pageshow', function(event) {
 });
 
-function sendJournal(){
-    var form = $('#journal_edit');
+function sendJournal(form){
+    //var form = $('#journal_edit');
     var uid = $('#uid_edit');
-    var url= serviceURL+webfileUri + '%23' + $(uid).val(); 
+    var url= serviceURL+webfileUri;
+
+    var uidVal = $(uid).val();
+    if(uidVal != null && uidVal != ""){
+	url = url + '%23' + uidVal;
+    }
     postFormData(form, url);
 }
 

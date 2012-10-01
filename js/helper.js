@@ -1,7 +1,7 @@
 
 function postFormData(form, postUrl){
     var s = form.serialize();
-    //alert(s);
+    alert(s);
     //return;
     $.ajax({
         type: "POST",
@@ -10,10 +10,20 @@ function postFormData(form, postUrl){
         success: function(data, textStatus, xhr) {
             alert("Successfully submitted. (" + textStatus + ")");
 	    var uid = getUrlVars()["uid"];
-	    showJournal(uid);
+	    if(uid != null && uid != ""){
+		showJournal(uid);
+	    }
+	    else{
+		location.reload();
+	    }
         }
     });
     return true;
+}
+
+function setDateTime(input){
+    var now = new Date();
+    input.val(now.format('yyyymmdd"T"HHMMss'));
 }
 
 function getUrlVars() {
