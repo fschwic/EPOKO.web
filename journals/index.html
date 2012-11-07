@@ -37,6 +37,7 @@
 	
     </div>
 
+    <!-- Journal Create -->
     <div id="add" data-role="page">
       <header>
 	<h1>Add Journal</h1>
@@ -75,10 +76,24 @@
 	</div>
 
 	<div class="content-primary" id="journal">
-	  <!-- h1 id="summary"></h1 -->
-	  <span id="description"></span>
-	  <span id="categories"></span>
-	  <ul id="journalFields" data-role="listview" data-inset="false">
+	  <header>
+	    <!-- h2 id="summary"></h2 -->
+	    <div class="properties">
+	    <div id="created"></div>
+	    <div id="classification"></div>
+	    <div id="status"></div>
+	    </div>
+	  </header>
+	  <article>
+	    <span id="description"></span>
+	  </article>
+	  <footer>
+	    <div id="categories"></div>
+	    <div class="properties">
+	      <div id="modified"></div>
+	    </div>
+	    <ul id="journalFields" data-role="listview" data-inset="false">
+	  </footer>
 	  </ul>
 	</div>
 

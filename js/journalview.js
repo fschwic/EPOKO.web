@@ -31,6 +31,15 @@ function showJournal(uid){
 	
 	$('#title').text("Journal: " + $(summary).text());
 	$('#summary').text($(summary).text());
+
+	$('#created').text($(created).attr('rfc822'));
+	$('#modified').text($(dtmodified).attr('rfc822'));
+	/* if( $(classification).text() === "PRIVATE" ){
+	    $('#classification').removeClass("public");
+	    $('#classification').addClass("private");
+	} */
+	$('#classification').text($(classification).text());
+	$('#status').text($(journalStatus).text());
 	
 	var creole = new Parse.Simple.Creole( {
 	    forIE: document.all,
@@ -46,13 +55,14 @@ function showJournal(uid){
 	
 	$('#categories *').remove();
 	if( categories.length > 0 ){
-	    categoriesText = "Kategorien: ";
+	    categoriesText = "";
 	    $.each(categories, function(i, categorie){
 		categoriesText += $(categorie).text() + " ";
 	    });
 	    $('#categories').text(categoriesText);
 	}
 	
+	/*
 	$('#journalFields li').remove();
 	if(dtstart){
 	    $('#journalFields').append('<li>' + $(dtstart).attr('rfc822') + '</li>');
@@ -73,6 +83,7 @@ function showJournal(uid){
 	    $('#journalFields').append('<li>' + $(journalStatus).text() + '</li>');
 	}
 	$('#journalFields').listview('refresh');
+	*/
 
     }, "xml");
 }
