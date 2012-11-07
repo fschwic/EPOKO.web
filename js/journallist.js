@@ -1,3 +1,5 @@
+/*jshint browser:true, jquery:true, devel:true, strict:true */
+
 var serviceURL = "/restaccess/jqj?cal_webfile=";
 var webfileId;
 var webfileUri;
@@ -47,12 +49,20 @@ function populateJournalList() {
 	journals = $(data).find('VJOURNAL');
 	
 	journals.sort(function(a, b){
-	    var keyA = $('SUMMARY',a).text();
-	    var keyB = $('SUMMARY',b).text();
+	    var keyA = $('SUMMARY',a).text().toLowerCase();
+	    var keyB = $('SUMMARY',b).text().toLowerCase();
 	    return (keyA > keyB) ? 1 : -1;
 	});
 	
 	var character = "0";
+	var creole = new Parse.Simple.Creole( {
+	    forIE: document.all,
+	    interwiki: {
+		WikiCreole: 'http://www.wikicreole.org/wiki/',
+		Wikipedia: 'http://en.wikipedia.org/wiki/'
+	    },
+	    linkFormat: ''
+	} );
 	$.each(journals, function(index, journal) {
 	    uid = $(journal).find("UID")[0];
 	    summary = $(journal).find("SUMMARY")[0];
@@ -64,17 +74,18 @@ function populateJournalList() {
 	    dtstamp = $(journal).find("DTSTAMP")[0];
 	    dtmodified = $(journal).find("LAST-MODIFIED")[0];
 	    
-	    var curCharacter = $(summary).text().substring(0,1).toUpperCase();
-	    if(character != curCharacter){
-		character = curCharacter;
-		$('#journalList').append('<li data-role="list-divider">' + character + '</li>');
-	    }
+      var curCharacter = $(summary).text().substring(0,1).toUpperCase();
+      if(character != curCharacter){
+        character = curCharacter;
+        $('#journalList').append('<li data-role="list-divider">' + character + '</li>');
+      }
 	    
 	    $('#journalList').append('<li><a class="ui-link-inherit" href="../journals/#view?uid='+$(uid).text()+'" data-transition="slide">'
 				     + '<p class="ui-li-aside">' + $(dtstart).attr("rfc822") + '</p>'
 				     + '<h4>' + $(summary).text() + '</h4>' 
 				     + '<p>' + $(description).text() + '</p>' 
 				     + '</a></li>');
+	    //creole.parse($('#journalList li:last-child a p:last-child').get(), $(description).text());
 	});
 	$('#journalList').listview('refresh');
     }, "xml");
