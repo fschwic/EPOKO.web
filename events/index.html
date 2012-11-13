@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>EPOKO.events</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
+    <link rel="stylesheet" href="/projects/EPOKO.web/css/jquery.mobile-1.1.1.min.css" />
+    <link rel="stylesheet" href="/projects/EPOKO.web/css/jquery.mobile.structure-1.1.1.min.css" />
+    <link rel="stylesheet" href="/projects/EPOKO.web/css/styles.css" />
+    <script src="/projects/EPOKO.web/js/jquery-1.7.1.min.js"></script>
+    <script type="application/javascript" language="JavaScript">
+      $(document).bind("mobileinit", function(){
+        $.mobile.allowCrossDomainPages = true;
+        $.support.cors = true;
+        $.mobile.ajaxLinksEnabled = true;
+      });
+    </script>
+    <script src="/projects/EPOKO.web/js/jquery.mobile-1.1.1.min.js"></script>
+    <script src="/projects/EPOKO.web/js/creoleParser.js"></script>
+    <script src="/projects/EPOKO.web/js/date.format.js"></script>
+    <script src="/projects/EPOKO.web/js/helper.js"></script>
+  </head>
+    
+  <body>
+
+    <!-- Event List -->
+    <div id="list" data-role="page">
+
+      <header data-role="header" data-position="fixed">
+        <h1>EPOKO.events</h1>
+        <a href="#add" data-rel="dialog" data-icon="plus" class="ui-btn-right">Add</a>
+      </header>
+
+      <section data-role="content">
+        <ul id="eventList" data-role="listview" data-filter="true" data-theme="c" data-dividertheme="c" data-filter-theme="c"></ul>
+      </section>
+
+    </div>
+
+    <div id="add" data-role="page">
+      <header>
+        <h1>Add Event</h1>
+      </header>
+
+      <section data-role="content">
+        <form id="event_add" accept-charset="ISO-8859-1">
+          <input name="BEGIN" value="VEVENT" type="hidden"/>
+          <input name="STATUS" value="DRAFT" type="hidden"/>
+          <input name="CLASS" value="PRIVATE" type="hidden"/>
+          <input id="dtstart_add" name="DTSTART" type="hidden"/>
+
+          <fieldset data-role="fieldcontain">
+            <label for="summary_add">Title</label>
+            <input id="summary_add" name="SUMMARY" type="text" data-mini="true"/>
+          </fieldset>
+
+        </form>
+
+        <a href="#" data-role="button" data-rel="back" onClick="setDateTime($('#dtstart_add')); sendJournal($('#event_add'));">OK</a>
+      </section>
+    </div>
+
+
+    <script src="/projects/EPOKO.web/js/eventlist.js"></script>
+    
+  </body>
+</html>

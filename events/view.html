@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>EPOKO.events - View</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
+    <link rel="stylesheet" href="/projects/EPOKO.web/css/jquery.mobile-1.1.1.min.css" />
+    <link rel="stylesheet" href="/projects/EPOKO.web/css/jquery.mobile.structure-1.1.1.min.css" />
+    <link rel="stylesheet" href="/projects/EPOKO.web/css/styles.css" />
+    <script src="/projects/EPOKO.web/js/jquery-1.7.1.min.js"></script>
+    <script type="application/javascript" language="JavaScript">
+      $(document).bind("mobileinit", function(){
+        $.mobile.allowCrossDomainPages = true;
+        $.support.cors = true;
+        $.mobile.ajaxLinksEnabled = true;
+      });
+    </script>
+    <script src="/projects/EPOKO.web/js/jquery.mobile-1.1.1.min.js"></script>
+    <script src="/projects/EPOKO.web/js/creoleParser.js"></script>
+    <script src="/projects/EPOKO.web/js/date.format.js"></script>
+    <script src="/projects/EPOKO.web/js/helper.js"></script>
+  </head>
+    
+  <body>
+
+    <!-- Event View -->
+    <div id="view" data-role="page" data-add-back-btn="true">
+      
+      <header data-role="header" data-position="fixed">
+	<h1 id="title"></h1>
+	<p>The view.</p>
+	<a id="editbutton" href="#edit" data-transition="slide" data-icon="grid" class="ui-btn-right">Edit</a>
+      </header>
+
+      <section data-role="content"> 
+
+	<div style="margin: -15px;" class="content-secondary">
+	  <ul style="margin: 0px;" id="journalListMenu" data-role="listview" data-theme="c" data-dividertheme="c"></ul>
+	</div>
+
+	<div class="content-primary" id="journal">
+	  <!-- h1 id="summary"></h1 -->
+	  <span id="description"></span>
+	  <span id="categories"></span>
+	  <ul id="journalFields" data-role="listview" data-inset="false">
+	  </ul>
+	</div>
+
+      </section>
+
+    </div>
+
+    <!-- Journal Edit -->
+    <div id="edit" data-role="page" data-add-back-btn="true"data-back-btn-text="Cancel">
+
+      <header data-role="header" data-position="fixed">
+	<h1>Edit Journal</h1>
+	<a href="#" data-rel="back" data-icon="check" onClick="sendJournal($('#journal_edit'));" class="ui-btn-right">Save</a>
+      </header>
+
+      <section data-role="content"> 
+	<form id="journal_edit" accept-charset="ISO-8859-1">
+	
+	  <input name="BEGIN" value="VJOURNAL" type="hidden"/>
+	  <input id="uid_edit" name="UID" type="hidden"/>
+	  
+	  <fieldset data-role="fieldcontain" class="ui-hide-label">
+	    <label for="status_edit">Classification</label>
+	    <select id="class_edit" name="CLASS" data-role="slider" data-mini="true">
+	      <option value="PUBLIC">Public</option>
+	      <option value="PRIVATE">Private</option>
+	    </select>
+	  </fieldset>
+
+	  <fieldset data-role="fieldcontain">
+	    <label for="status_edit">Status</label>
+	    <select id="status_edit" name="STATUS" data-mini="true">
+	      <option value="">---</option>
+	      <option value="DRAFT">DRAFT</option>
+	      <option value="FINAL">FINAL</option>
+	      <option value="CANCELLED">CANCELLED</option>
+	    </select>
+	  </fieldset>
+
+	  <!-- fieldset data-role="fieldcontain">
+	    <label for="dtstart_edit">Date, Time</label>
+	    <input id="dtstart_edit" name="DTSTART" type="datetime" data-mini="true"/>
+	  </fieldset -->
+
+	  <fieldset data-role="fieldcontain">
+	    <label for="summary_edit">Title</label>
+	    <input id="summary_edit" name="SUMMARY" type="text" data-mini="true"/>
+	  </fieldset>
+
+	  <fieldset data-role="fieldcontain">
+	    <label for="description_edit">Description</label>
+	    <textarea id="description_edit" name="DESCRIPTION" data-mini="true"></textarea>
+	  </fieldset>
+
+	  <fieldset data-role="fieldcontain">
+	    <label for="categories_edit">Kategorien</label>
+	    <select id="categories_edit" name="CATEGORIES" data-native-menu="false" multiple="multiple" data-mini="true">
+	    </select>
+	    <div data-role="controlgroup">
+	      <input id="new-categories" type="text" data-mini="true" style="width:100px"/>
+	      <a onClick="addCategory($('#new-categories').val());" data-role="button" data-icon="plus" data-mini="true" data-inline="true">Add</a>
+	    </div>
+	  </fieldset>
+
+	</form>
+      </section>
+
+    </div>
+
+    <script src="/projects/EPOKO.web/js/eventlist.js"></script>
+    
+  </body>
+</html>
