@@ -27,14 +27,14 @@ function sendJournal(form) {
 
 function postFormData(form, postUrl) {
     var s = form.serialize();
-    alert(s);
+    console.log("Serialized Form Data: " + s);
     //return;
     $.ajax({
         type: "POST",
         url: postUrl,
         data: s,
         success: function(data, textStatus, xhr) {
-            alert("Successfully submitted. (" + textStatus + ")");
+            console.log("Successfully submitted. (" + textStatus + ")");
             var uid = getUrlVars()["uid"];
             if (uid != null && uid != "") {
                 showJournal(uid);
@@ -76,6 +76,11 @@ function decodeEntities(str) {
 
 function addCategory(cat) {
     //alert(cat);
+    if (typeof cat != "string") {
+      var tmp = $(cat).val();
+      $(cat).val("");
+      cat = tmp;
+    }
     $('#categories_edit').append('<option selected="selected" value="' + cat + '">' + cat + '</option>');
     $('#categories_edit').selectmenu('refresh');
 }
