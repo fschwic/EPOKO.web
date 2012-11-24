@@ -79,6 +79,7 @@ function addCategory(cat) {
     if (typeof cat != "string") {
       var tmp = $(cat).val();
       $(cat).val("");
+      //$(cat).get().focus();
       cat = tmp;
     }
     $('#categories_edit').append('<option selected="selected" value="' + cat + '">' + cat + '</option>');
