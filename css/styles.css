@@ -53,11 +53,23 @@ h2 {
 }
 
 .public:before {
-  content: "öffentlich";
+  content: "Public";
 }
 
 .private:before {
-  content: "privat";
+  content: "Private";
+}
+
+.draft:before {
+  content: "Draft";
+}
+
+.final:before {
+  content: "Final";
+}
+
+.cancelled:before {
+  content: "Cancelled";
 }
 
 #status {

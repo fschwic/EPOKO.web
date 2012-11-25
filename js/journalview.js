@@ -35,11 +35,13 @@ function showJournal(uid){
 	$('#created').text($(created).attr('rfc822'));
 	$('#modified').text($(dtmodified).attr('rfc822'));
 	/* if( $(classification).text() === "PRIVATE" ){
-	    $('#classification').removeClass("public");
 	    $('#classification').addClass("private");
 	} */
-	$('#classification').text($(classification).text());
-	$('#status').text($(journalStatus).text());
+  $('#classification').removeClass("public private").addClass($(classification).text().toLowerCase());
+  //$('#classification').text($(classification).text());
+
+  $('#status').removeClass("draft final cancelled").addClass($(journalStatus).text().toLowerCase());
+  //$('#status').text($(journalStatus).text());
 	
 	var creole = new Parse.Simple.Creole( {
 	    forIE: document.all,
