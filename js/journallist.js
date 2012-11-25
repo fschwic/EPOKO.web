@@ -44,15 +44,12 @@ $(document).bind( "pagebeforechange", function( e, data ) {
 });
 
 function populateJournalList() {
-    $.get(serviceURL+webfileUri, function(data) {
-	$('#journalList li').remove();
-	journals = $(data).find('VJOURNAL');
-	
-	journals.sort(function(a, b){
-	    var keyA = $('SUMMARY',a).text().toLowerCase();
-	    var keyB = $('SUMMARY',b).text().toLowerCase();
-	    return (keyA > keyB) ? 1 : -1;
-	});
+  $('#button-sort .ui-btn-text').text(comperator.title);
+
+  $.get(serviceURL+webfileUri, function(data) {
+    $('#journalList li').remove();
+    journals = $(data).find('VJOURNAL');
+    journals.sort(comperator);
 	
 	var character = "0";
 	var creole = new Parse.Simple.Creole( {
@@ -73,12 +70,14 @@ function populateJournalList() {
 	    dtstart = $(journal).find("DTSTART")[0];
 	    dtstamp = $(journal).find("DTSTAMP")[0];
 	    dtmodified = $(journal).find("LAST-MODIFIED")[0];
-	    
-      var curCharacter = $(summary).text().substring(0,1).toUpperCase();
-      if(character != curCharacter){
-        character = curCharacter;
-        $('#journalList').append('<li data-role="list-divider">' + character + '</li>');
-      }
+
+      if (comperator.name.search(/alpha/) === 0) {
+        var curCharacter = $(summary).text().substring(0,1).toUpperCase();
+        if(character != curCharacter){
+          character = curCharacter;
+          $('#journalList').append('<li data-role="list-divider">' + character + '</li>');
+        }
+	    }
 	    
 	    $('#journalList').append('<li><a class="ui-link-inherit" href="../journals/#view?uid='+$(uid).text()+'" data-transition="slide">'
 				     + '<p class="ui-li-aside">' + $(dtstart).attr("rfc822") + '</p>'

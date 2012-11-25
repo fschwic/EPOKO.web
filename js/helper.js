@@ -85,3 +85,45 @@ function addCategory(cat) {
     $('#categories_edit').append('<option selected="selected" value="' + cat + '">' + cat + '</option>');
     $('#categories_edit').selectmenu('refresh');
 }
+
+function alphaAscComperator(a, b){  
+  var keyA = $('SUMMARY',a).text().toLowerCase();
+  var keyB = $('SUMMARY',b).text().toLowerCase();
+  return (keyA > keyB) ? 1 : -1;
+}
+alphaAscComperator.title = "A-Z";
+
+function alphaDescComperator(a, b){
+  var keyA = $('SUMMARY',a).text().toLowerCase();
+  var keyB = $('SUMMARY',b).text().toLowerCase();
+  return (keyA < keyB) ? 1 : -1;
+}
+alphaDescComperator.title = "Z-A";
+
+function dateAscComperator(a, b){
+  var keyA = $('DTSTART',a).text();
+  var keyB = $('DTSTART',b).text();
+  return (keyA > keyB) ? 1 : -1;
+}
+dateAscComperator.title = "Chronologic";
+
+function dateDescComperator(a, b){  
+  var keyA = $('DTSTART',a).text();
+  var keyB = $('DTSTART',b).text();
+  return (keyA < keyB) ? 1 : -1;
+}
+dateDescComperator.title = "Newest on Top";
+
+var comperators = new Array(alphaAscComperator,
+                            dateAscComperator,
+                            dateDescComperator,
+                            alphaDescComperator);
+var comperator = alphaAscComperator;
+
+function changeOrder(repopulate){
+  var tmp = comperators.shift();
+  comperators.push(tmp);
+  comperator = comperators[0];
+  repopulate();
+}
+
