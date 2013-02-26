@@ -3,6 +3,7 @@
 var serviceURL = "/restaccess/jqj?cal_webfile=";
 var webfileId;
 var webfileUri;
+var categorieSet = {};
 
 $('body div').on('pageinit', function(event) {
     webfileId = getUrlVars()["uri"];
@@ -71,14 +72,19 @@ function populateJournalList() {
 	    dtstamp = $(journal).find("DTSTAMP")[0];
 	    dtmodified = $(journal).find("LAST-MODIFIED")[0];
 
-      if (comperator.name.search(/alpha/) === 0) {
-        var curCharacter = $(summary).text().substring(0,1).toUpperCase();
-        if(character != curCharacter){
-          character = curCharacter;
-          $('#journalList').append('<li data-role="list-divider">' + character + '</li>');
-        }
-	    }
+            if (comperator.name.search(/alpha/) === 0) {
+              var curCharacter = $(summary).text().substring(0,1).toUpperCase();
+              if(character != curCharacter){
+                character = curCharacter;
+                $('#journalList').append('<li data-role="list-divider">' + character + '</li>');
+              }
+            }
 	    
+	    $.each(categories, function(index, categorie){
+		var categorieKey = $(categorie).text().toLowerCase();
+		var x = categorieSet[categorieKey];
+		categorieSet[categorieKey] = x ? x+1 : 1;
+            });
 	    $('#journalList').append('<li><a class="ui-link-inherit" href="../journals/#view?uid='+$(uid).text()+'" data-transition="slide">'
 				     + '<p class="ui-li-aside">' + $(dtstart).attr("rfc822") + '</p>'
 				     + '<h4>' + $(summary).text() + '</h4>' 
