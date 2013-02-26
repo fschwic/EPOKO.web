@@ -35,8 +35,8 @@
   padding-top: 5px;
 }
 
-h2 {
-  //background: blue;
+#journal header h2 {
+  background: blue;
   margin-top: 0px;
   float: left;
 }
