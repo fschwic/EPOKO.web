@@ -1,6 +1,11 @@
 
-.content-secondary {
+.content-secondary, .ui-block-a {
   display: none;
+  width: 0% !important;
+}
+
+.content-primary, .ui-block-b {
+  width: 100% !important;
 }
 
 @media screen and (orientation: portrait), screen and (max-width: 801px)
@@ -19,6 +24,20 @@
   .content-primary {
     width: 70%;
     float: right;
+  }
+
+  .ui-block-a {
+    display: block;
+    width: 30% !important;
+    float: left;
+    border-right: 1px solid #CCC;
+    //background: green;
+  }
+  
+  .ui-block-b {
+    width: 70% !important;
+    float: right;
+    //background: red;
   }
 }
 
