@@ -1,3 +1,15 @@
+#view section {
+  padding: 0px;
+}
+
+#view section .ui-block-a ul {
+  margin: 0px;
+  padding: 0px;
+}
+
+#view section .ui-block-a ul li {
+  margin: 0px;
+}
 
 .content-secondary, .ui-block-a {
   display: none;
@@ -39,6 +51,10 @@
     float: right;
     //background: red;
   }
+}
+
+#journal {
+  padding: 10px;
 }
 
 #journal header {
@@ -107,5 +123,11 @@
 
 #categories:before {
   content: "Kategorien: ";
+}
+
+/* edit view */
+
+#new-categories {
+  width: 100px;
 }
 

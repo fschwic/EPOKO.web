@@ -78,11 +78,10 @@
         <a id="editbutton" href="#edit" data-transition="slide" data-icon="grid" class="ui-btn-right">Edit</a>
       </header>
 
-      <section data-role="content" style="margin: 0px; padding: 0px;"> 
-<div style="margin: 0px; padding: 0px;" class="ui-grid-a">
+      <section data-role="content" class="ui-grid-a">
 
-        <div style="margin: 0px;" class="ui-block-a xcontent-secondary">
-          <ul style="margin: 0px;" id="journalListMenu" data-role="listview" data-theme="c" data-dividertheme="c"></ul>
+        <div class="ui-block-a xcontent-secondary">
+          <ul id="journalListMenu" data-role="listview" data-theme="c" data-dividertheme="c"></ul>
         </div>
         
         <div class="ui-block-b xcontent-primary" id="journal">
@@ -163,7 +162,7 @@
 	    <select id="categories_edit" name="CATEGORIES" data-native-menu="false" multiple="multiple" data-mini="true">
 	    </select>
 	    <div data-role="controlgroup">
-	      <input id="new-categories" type="text" data-mini="true" style="width:100px"/>
+	      <input id="new-categories" type="text" data-mini="true"/>
 	      <a onClick="addCategory($('#new-categories'));" data-role="button" data-icon="plus" data-mini="true" data-inline="true">Add</a>
 	    </div>
 	  </fieldset>
