@@ -114,11 +114,11 @@ function dateDescComperator(a, b){
 }
 dateDescComperator.title = "Newest on Top";
 
-var comperators = new Array(alphaAscComperator,
+var comperators = new Array(dateDescComperator,
+			    alphaAscComperator,
                             dateAscComperator,
-                            dateDescComperator,
                             alphaDescComperator);
-var comperator = alphaAscComperator;
+var comperator = dateDescComperator;
 
 function changeOrder(repopulate){
   var tmp = comperators.shift();

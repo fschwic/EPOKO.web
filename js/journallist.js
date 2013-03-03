@@ -49,18 +49,11 @@ function populateJournalList() {
 
   $.get(serviceURL+webfileUri, function(data) {
     $('#journalList li').remove();
+    $('#journalListMenu li').remove();
     journals = $(data).find('VJOURNAL');
     journals.sort(comperator);
 	
 	var character = "0";
-	var creole = new Parse.Simple.Creole( {
-	    forIE: document.all,
-	    interwiki: {
-		WikiCreole: 'http://www.wikicreole.org/wiki/',
-		Wikipedia: 'http://en.wikipedia.org/wiki/'
-	    },
-	    linkFormat: ''
-	} );
 	$.each(journals, function(index, journal) {
 	    uid = $(journal).find("UID")[0];
 	    summary = $(journal).find("SUMMARY")[0];
@@ -77,6 +70,7 @@ function populateJournalList() {
               if(character != curCharacter){
                 character = curCharacter;
                 $('#journalList').append('<li data-role="list-divider">' + character + '</li>');
+		$('#journalListMenu').append('<li data-role="list-divider">' + character + '</li>');
               }
             }
 	    
@@ -85,13 +79,19 @@ function populateJournalList() {
 		var x = categorieSet[categorieKey];
 		categorieSet[categorieKey] = x ? x+1 : 1;
             });
+	    // Overview
 	    $('#journalList').append('<li><a class="ui-link-inherit" href="../journals/#view?uid='+$(uid).text()+'" data-transition="slide">'
 				     + '<p class="ui-li-aside">' + $(dtstart).attr("rfc822") + '</p>'
 				     + '<h4>' + $(summary).text() + '</h4>' 
 				     + '<p>' + $(description).text() + '</p>' 
 				     + '</a></li>');
-	    //creole.parse($('#journalList li:last-child a p:last-child').get(), $(description).text());
+            // List in journal view
+	    $('#journalListMenu').append('<li><a class="ui-link-inherit" href="#view?uid='+$(uid).text()+'" data-ajax="false">'
+	    		 + '<h4>' + $(summary).text() + '</h4>' 
+	    				 + '<p>' + $(dtstart).attr("rfc822") + '</p>' 
+	    			 + '</a></li>');
 	});
 	$('#journalList').listview('refresh');
+	$('#journalListMenu').listview('refresh');
     }, "xml");
 }
