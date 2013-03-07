@@ -17,7 +17,19 @@ $('#view').on('swiperight', function(e){
     $.mobile.changePage( "#list", { transition: "slide", reverse: "true" });
 });
 
+function clearJournal(){
+    $('#title').text("Loading Journal");
+    $('#summary').text("");
+    $('#created').text("");
+    $('#modified').text("");
+    $('#classification').removeClass("public private");
+    $('#status').removeClass("draft final cancelled");
+    $('#description *').remove();
+    $('#categories *').remove();
+}
+
 function showJournal(uid){
+    clearJournal();
     $.get(serviceURL+webfileUri + '%23' + uid, function(data) {
 	journals = $(data).find('VJOURNAL');
 	journal = journals[0];
@@ -43,11 +55,8 @@ function showJournal(uid){
 	/* if( $(classification).text() === "PRIVATE" ){
 	    $('#classification').addClass("private");
 	} */
-  $('#classification').removeClass("public private").addClass($(classification).text().toLowerCase());
-  //$('#classification').text($(classification).text());
-
-  $('#status').removeClass("draft final cancelled").addClass($(journalStatus).text().toLowerCase());
-  //$('#status').text($(journalStatus).text());
+	$('#classification').addClass($(classification).text().toLowerCase());
+	$('#status').addClass($(journalStatus).text().toLowerCase());
 	
 	var creole = new Parse.Simple.Creole( {
 	    forIE: document.all,
@@ -58,10 +67,8 @@ function showJournal(uid){
 	    linkFormat: ''
 	} );
 	theElement = document.getElementById('description');
-	$('#description *').remove();
 	creole.parse(theElement, $(description).text());	
 	
-	$('#categories *').remove();
 	if( categories.length > 0 ){
 	    categoriesText = "";
 	    $.each(categories, function(i, categorie){
