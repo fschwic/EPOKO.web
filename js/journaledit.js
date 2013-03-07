@@ -1,4 +1,8 @@
 $('#edit').on('pageshow', function(event) {
+    //var uid = getUrlVars()["uid"];
+    //$('#view').on('swiperight', function(e){
+    //$.mobile.changePage( "", { transition: "slide", reverse: "true" });
+    //});
 });
 
 function showJournalForm(data) {

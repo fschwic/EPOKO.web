@@ -1,6 +1,9 @@
 // In Journal View the listing is loaded when the page appears.
 $('#view').on('pageshow', function(event) {
     var uid = getUrlVars()["uid"];
+    $('#view').on('swipeleft', function(e){
+	$.mobile.changePage( "#edit?uid=" + uid, { transition: "slide" });
+    });
 });
 
 // If Journal View is called directly, pagebeforechange is not bound already (see journallist.js)
@@ -8,6 +11,10 @@ $('#view').on('pageshow', function(event) {
 $('#view').on('pageinit', function(event) {
     var uid = getUrlVars()["uid"];
     showJournal(uid);
+});
+
+$('#view').on('swiperight', function(e){
+    $.mobile.changePage( "#list", { transition: "slide", reverse: "true" });
 });
 
 function showJournal(uid){
