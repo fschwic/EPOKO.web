@@ -5,7 +5,7 @@ var webfileId;
 var webfileUri;
 var categorieSet = {};
 
-$('body div').on('pageinit', function(event) {
+$('#list, #view').on('pageinit', function(event) {
     webfileId = getUrlVars()["uri"];
     webfileUri = "http://www.epoko.net/webfile/dav/" + webfileId + "/public.ics";
     populateJournalList();
@@ -37,8 +37,9 @@ $(document).bind( "pagebeforechange", function( e, data ) {
 	else if( u.hash.search(/^#edit/) !== -1 ) {
 	    //alert("edit");
 	    var uid = u.hash.replace( /.*uid=/, "" );
+	    //$.mobile.changePage( $('#edit'), { transition: "slide" } );
 	    $.get(serviceURL+webfileUri+'%23'+uid, showJournalForm, "xml");
-	    $.mobile.changePage( $('#edit'), data.options );
+	    //$.mobile.changePage( $('#edit'), data.options );
 	    e.preventDefault();
 	}
     }
@@ -91,7 +92,18 @@ function populateJournalList() {
 	    				 + '<p>' + $(dtstart).attr("rfc822") + '</p>' 
 	    			 + '</a></li>');
 	});
-	$('#journalList').listview('refresh');
-	$('#journalListMenu').listview('refresh');
+      // don't refresh before init ... or catch
+      try{
+	  $('#journalList').listview('refresh');
+      }
+      catch(e){
+	  // journlList not initialized
+      }
+      try{
+	  $('#journalListMenu').listview('refresh');
+      }
+      catch(e){
+	  // journalListMenu not initialized
+      }
     }, "xml");
 }

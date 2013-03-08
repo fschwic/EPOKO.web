@@ -6,6 +6,8 @@ $('#edit').on('pageshow', function(event) {
 });
 
 function showJournalForm(data) {
+    $.mobile.changePage( $('#edit'), { transition: "slide" } );
+
     journals = $(data).find('VJOURNAL');
     journal = journals[0];
 
@@ -42,5 +44,10 @@ function showJournalForm(data) {
     }
     $('#categories_edit').selectmenu('refresh');
 
-    $('#journal_edit').textinput("refresh");
+    //try{
+	//$('#journal_edit').textinput("refresh");
+    //}
+    //catch(e){
+	// // journlList not initialized, on init refresh is implicit
+    //}
 }
