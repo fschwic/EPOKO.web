@@ -92,6 +92,23 @@ function populateJournalList() {
 	    				 + '<p>' + $(dtstart).attr("rfc822") + '</p>' 
 	    			 + '</a></li>');
 	});
+
+      // Categories
+//       console.log("cats");
+      var categorieArray = [];
+//       for(var prop in categorieSet){
+// 	  categorieArray.push(prop);
+//       };
+//       categorieArray.sort();
+//       $('#journalList').append('<li data-role="list-divider">Kategorien</li>');
+//       $.each(categorieArray, function(index, cat){
+// 	  console.log(index + " - " + cat + " - " + categorieSet[cat]);
+// 	  $('#journalList').append('<li><a class="ui-link-inherit" href="" data-transition="slide">'
+// 				   + '<h4>' + cat + '</h4>'
+// 				   + '<span class="ui-li-count">' + categorieSet[cat] + '</span>'
+// 				   + '</a></li>');
+//       });
+
       // don't refresh before init ... or catch
       try{
 	  $('#journalList').listview('refresh');
