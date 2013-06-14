@@ -1,9 +1,9 @@
 // In Journal View the listing is loaded when the page appears.
 $('#view').on('pageshow', function(event) {
     var uid = getUrlVars()["uid"];
-    $('#view').on('swipeleft', function(e){
-	$.mobile.changePage( "#edit?uid=" + uid, { transition: "slide" });
-    });
+    // $('#view').on('swipeleft', function(e){
+    // $.mobile.changePage( "#edit?uid=" + uid, { transition: "slide" });
+    // });
 });
 
 // If Journal View is called directly, pagebeforechange is not bound already (see journallist.js)
@@ -13,9 +13,9 @@ $('#view').on('pageinit', function(event) {
     showJournal(uid);
 });
 
-$('#view').on('swiperight', function(e){
-    $.mobile.changePage( "#list", { transition: "slide", reverse: "true" });
-});
+// $('#view').on('swiperight', function(e){
+//     $.mobile.changePage( "#list", { transition: "slide", reverse: "true" });
+// });
 
 function clearJournal(){
     $('#title').text("Loading Journal");
@@ -58,16 +58,16 @@ function showJournal(uid){
 	$('#classification').addClass($(classification).text().toLowerCase());
 	$('#status').addClass($(journalStatus).text().toLowerCase());
 	
-	var creole = new Parse.Simple.Creole( {
+	var creoleParser = new creole({
 	    forIE: document.all,
 	    interwiki: {
 		WikiCreole: 'http://www.wikicreole.org/wiki/',
 		Wikipedia: 'http://en.wikipedia.org/wiki/'
 	    },
-	    linkFormat: ''
-	} );
+	    linkFormat: '#'
+	});
 	theElement = document.getElementById('description');
-	creole.parse(theElement, $(description).text());	
+	creoleParser.parse(theElement, $(description).text());	
 	
 	if( categories.length > 0 ){
 	    categoriesText = "";

@@ -15,16 +15,19 @@
     <link rel="stylesheet" href="../css/jquery.mobile-1.1.1.min.css" />
     <link rel="stylesheet" href="../css/jquery.mobile.structure-1.1.1.min.css" />
     <link rel="stylesheet" href="../css/styles.css" />
+    <!-- script src="http://debug.phonegap.com/target/target-script-min.js#fschwic"></script -->
     <script src="../js/jquery-1.7.1.min.js"></script>
     <script type="application/javascript" language="JavaScript">
       $(document).bind("mobileinit", function(){
+        console.log("Initialising jQuery Mobile ...");
         $.mobile.allowCrossDomainPages = true;
         $.support.cors = true;
         $.mobile.ajaxLinksEnabled = true;
+        console.log("... DONE!");
       });
     </script>
     <script src="../js/jquery.mobile-1.1.1.min.js"></script>
-    <script src="../js/creoleParser.js"></script>
+    <script src="../js/creole.js"></script>
     <script src="../js/date.format.js"></script>
     <script src="../js/helper.js"></script>
   </head>
