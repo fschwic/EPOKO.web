@@ -23,6 +23,7 @@ $(document).bind( "pagebeforechange", function( e, data ) {
 	if ( u.hash.search(/^#view/) !== -1 ) {
 	    //alert("view");
 	    var uid = u.hash.replace( /.*uid=/, "" );
+            // FIXME hm! Should not be called if post request from edit page.
 	    showJournal(uid);
 	    
 	    // Now call changePage() and tell it to switch to

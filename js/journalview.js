@@ -9,6 +9,7 @@ $('#view').on('pageshow', function(event) {
 // If Journal View is called directly, pagebeforechange is not bound already (see journallist.js)
 // and the first time the content must be shown while init.
 $('#view').on('pageinit', function(event) {
+    console.log('#view.pageinit');
     var uid = getUrlVars()["uid"];
     showJournal(uid);
 });
@@ -18,6 +19,7 @@ $('#view').on('pageinit', function(event) {
 // });
 
 function clearJournal(){
+    console.log('clearJournal()');
     $('#title').text("Loading Journal");
     $('#summary').text("");
     $('#created').text("");
@@ -31,6 +33,7 @@ function clearJournal(){
 function showJournal(uid){
     clearJournal();
     $.get(serviceURL+webfileUri + '%23' + uid, function(data) {
+	console.log('showJournal(uid).get');
 	journals = $(data).find('VJOURNAL');
 	journal = journals[0];
 	
