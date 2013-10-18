@@ -27,21 +27,22 @@ function sendJournal(form) {
 
 function postFormData(form, postUrl) {
     var s = form.serialize();
-    console.log("Serialized Form Data: " + s);
-    //return;
+    //console.log("Serialized Form Data: " + s);
     $.ajax({
         type: "POST",
         url: postUrl,
         data: s,
         success: function(data, textStatus, xhr) {
-            console.log("Successfully submitted. (" + textStatus + ")");
+            //console.log("Successfully submitted. (" + textStatus + ")");
             var uid = getUrlVars()["uid"];
             if (uid != null && uid != "") {
+		// uid is only available if we are back on #view
                 showJournal(uid);
             } else {
+		console.log('can not reload #view after postFormData');
                 location.reload();
             }
-        }
+	}
     });
     return true;
 }

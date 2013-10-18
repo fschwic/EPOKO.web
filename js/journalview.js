@@ -1,6 +1,7 @@
 // In Journal View the listing is loaded when the page appears.
 $('#view').on('pageshow', function(event) {
-    var uid = getUrlVars()["uid"];
+    //console.log('#view.pageshow');
+    //var uid = getUrlVars()["uid"];
     // $('#view').on('swipeleft', function(e){
     // $.mobile.changePage( "#edit?uid=" + uid, { transition: "slide" });
     // });
@@ -9,9 +10,13 @@ $('#view').on('pageshow', function(event) {
 // If Journal View is called directly, pagebeforechange is not bound already (see journallist.js)
 // and the first time the content must be shown while init.
 $('#view').on('pageinit', function(event) {
-    console.log('#view.pageinit');
-    var uid = getUrlVars()["uid"];
-    showJournal(uid);
+    //console.log('#view.pageinit');
+    if(!webfileId){
+	webfileId = getUrlVars()["uri"];
+	webfileUri = "http://www.epoko.net/webfile/dav/" + webfileId + "/public.ics";
+	var uid = getUrlVars()["uid"];
+	showJournal(uid);
+    }
 });
 
 // $('#view').on('swiperight', function(e){
@@ -32,6 +37,7 @@ function clearJournal(){
 
 function showJournal(uid){
     clearJournal();
+    console.log('request: '+ serviceURL+webfileUri + '%23' + uid);
     $.get(serviceURL+webfileUri + '%23' + uid, function(data) {
 	console.log('showJournal(uid).get');
 	journals = $(data).find('VJOURNAL');
