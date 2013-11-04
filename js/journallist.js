@@ -1,17 +1,26 @@
 /*jshint browser:true, jquery:true, devel:true, strict:true */
 
-var serviceURL = "/restaccess/jqj?cal_webfile=";
+var serviceURL = "http://localhost:8080/restaccess/jqj?cal_webfile=";
 var webfileId;
-var categorieSelection;
 var webfileUri;
+var categorieSelection;
 var categorieSet = {};
+
+$('#cats').on('pageinit', function(event) {
+    initFromUrl();
+    populateCategoriesList();
+});
 
 $('#list').on('pageinit', function(event) {
     //console.log("#list.pageinit");
-    webfileId = getUrlVars()["uri"];
-    webfileUri = "http://www.epoko.net/webfile/dav/" + webfileId + "/public.ics";
+    initFromUrl();
     populateJournalList();
 });
+
+function initFromUrl(){
+    webfileId = getUrlVars()["uri"];
+    webfileUri = "http://www.epoko.net/webfile/dav/" + webfileId + "/public.ics";    
+}
 
 // Listen for any attempts to call changePage().
 $(document).on( "pagebeforechange", function( e, data ) {
@@ -50,6 +59,55 @@ $(document).on( "pagebeforechange", function( e, data ) {
     }
 });
 
+function populateCategoriesList(){
+    $.get(serviceURL + webfileUri, function(data) {
+        $('categoriesList li').remove();
+        $('#categoriesList').append('<li><a class="ui-link-inherit" href="../journals/#list" onClick="categorieSelection = \'\'; populateJournalList();" data-transition="slide">'
+                + '<h4>All Categories</h4>'
+                + '<span class="ui-li-count">0</span>'
+                + '</a></li>');
+
+        journals = $(data).find('VJOURNAL');
+        $.each(journals, function(index, journal) {
+            categories = $(journal).find('CATEGORIES');
+            $.each(categories, function(index, categorie){
+                var categorieKey = $(categorie).text().toLowerCase();
+                if(! categorieSet[categorieKey] ){
+                    categorieSet[categorieKey] = {};
+                };
+                if(! categorieSet[categorieKey].name ){
+                    categorieSet[categorieKey].name = $(categorie).text();
+                };
+                var x = categorieSet[categorieKey].count;
+                categorieSet[categorieKey].count = x ? x+1 : 1;
+            });
+        });
+
+        // Categories
+        var categorieArray = [];
+        for(var prop in categorieSet){
+            categorieArray.push(prop);
+        };
+        categorieArray.sort();
+        // $('#journalList').append('<li data-role="list-divider">Kategorien</li>');
+        $.each(categorieArray, function(index, cat){
+            //?uri=' + webfileId + '?categorie=' + cat + '
+            $('#categoriesList').append('<li><a class="ui-link-inherit" href="../journals/#list" onClick="categorieSelection = \'' + cat + '\'; populateJournalList();" data-transition="slide">'
+                + '<h4>' + categorieSet[cat].name + '</h4>'
+                + '<span class="ui-li-count">' + categorieSet[cat].count + '</span>'
+                + '</a></li>');
+        });
+
+        // don't refresh before init ... or catch
+        try{
+            $('#categoriesList').listview('refresh');
+        }
+        catch(e){
+            // journlList not initialized
+        }
+    }, "xml");
+}
+
 function populateJournalList() {
 //    alert(categorieSelection);
   $('#button-sort .ui-btn-text').text(comperator.title);
@@ -58,7 +116,7 @@ function populateJournalList() {
     if(categorieSelection){
 	params += "&categories=" + categorieSelection;
     };
-  $.get(serviceURL+webfileUri + params, function(data) {
+  $.get(serviceURL + webfileUri + params, function(data) {
     $('#journalList li').remove();
     $('#journalListMenu li').remove();
     journals = $(data).find('VJOURNAL');
@@ -76,28 +134,19 @@ function populateJournalList() {
 	    dtstamp = $(journal).find("DTSTAMP")[0];
 	    dtmodified = $(journal).find("LAST-MODIFIED")[0];
 
-            if (comperator.name.search(/alpha/) === 0) {
-              var curCharacter = $(summary).text().substring(0,1).toUpperCase();
-              if(character != curCharacter){
+        if (comperator.name.search(/alpha/) === 0) {
+            var curCharacter = $(summary).text().substring(0,1).toUpperCase();
+            if(character != curCharacter){
                 character = curCharacter;
                 $('#journalList').append('<li data-role="list-divider">' + character + '</li>');
-		$('#journalListMenu').append('<li data-role="list-divider">' + character + '</li>');
-              }
+                $('#journalListMenu').append('<li data-role="list-divider">' + character + '</li>');
             }
+        }
 	    
 	    var categoriesText = []; 
 	    $.each(categories, function(index, categorie){
-		categoriesText.push($(categorie).text());
-		var categorieKey = $(categorie).text().toLowerCase();
-		if(! categorieSet[categorieKey] ){
-		    categorieSet[categorieKey] = {};
-		};
-		if(! categorieSet[categorieKey].name ){
-		    categorieSet[categorieKey].name = $(categorie).text();
-		};
-		var x = categorieSet[categorieKey].count;
-		categorieSet[categorieKey].count = x ? x+1 : 1;
-            });
+    		categoriesText.push($(categorie).text());
+        });
 	    // Overview
 	    $('#journalList').append('<li><a class="ui-link-inherit" href="../journals/#view?uid='+$(uid).text()+'" data-transition="slide">'
 				     + '<p class="ui-li-aside">' + $(dtstart).attr("rfc822") + '</p>'
@@ -112,20 +161,6 @@ function populateJournalList() {
 	    			 + '</a></li>');
 	});
 
-      // Categories
-      var categorieArray = [];
-      for(var prop in categorieSet){
- 	  categorieArray.push(prop);
-      };
-      categorieArray.sort();
-      // $('#journalList').append('<li data-role="list-divider">Kategorien</li>');
-      $.each(categorieArray, function(index, cat){
-	  //?uri=' + webfileId + '?categorie=' + cat + '
- 	  $('#journalList').append('<li><a class="ui-link-inherit" href="" onClick="categorieSelection = \'' + cat + '\'; populateJournalList();" data-transition="slide">'
- 				   + '<h4>' + categorieSet[cat].name + '</h4>'
- 				   + '<span class="ui-li-count">' + categorieSet[cat].count + '</span>'
- 				   + '</a></li>');
-       });
 
       // don't refresh before init ... or catch
       try{

@@ -30,7 +30,10 @@ function postFormData(form, postUrl) {
     //console.log("Serialized Form Data: " + s);
     $.ajax({
         type: "POST",
-        url: postUrl,
+	url: postUrl,
+        xhrFields: {
+		withCredentials: true
+	},
         data: s,
         success: function(data, textStatus, xhr) {
             //console.log("Successfully submitted. (" + textStatus + ")");
