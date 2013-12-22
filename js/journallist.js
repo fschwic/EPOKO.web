@@ -99,14 +99,14 @@ function populateJournalList() {
 		categorieSet[categorieKey].count = x ? x+1 : 1;
             });
 	    // Overview
-	    $('#journalList').append('<li><a class="ui-link-inherit" href="../journals/#view?uid='+$(uid).text()+'" data-transition="slide">'
+	    $('#journalList').append('<li><a class="ui-link-inherit" href="../journals/#view?uid='+encodeURIComponent($(uid).text())+'" data-transition="slide">'
 				     + '<p class="ui-li-aside">' + $(dtstart).attr("rfc822") + '</p>'
 				     + '<h4>' + $(summary).text() + '</h4>' 
 				     + '<p>' + $(description).text() + '</p>' 
 				     + '<p><strong>' + categoriesText.join(", ") + '</strong></p>' 
 				     + '</a></li>');
             // List in journal view
-	    $('#journalListMenu').append('<li><a class="ui-link-inherit" href="#view?uid='+$(uid).text()+'" data-ajax="false">'
+	    $('#journalListMenu').append('<li><a class="ui-link-inherit" href="#view?uid='+encodeURIComponent($(uid).text())+'" data-ajax="false">'
 	    		 + '<h4>' + $(summary).text() + '</h4>' 
 	    				 + '<p>' + $(dtstart).attr("rfc822") + '</p>' 
 	    			 + '</a></li>');
