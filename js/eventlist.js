@@ -3,6 +3,21 @@ var webfileId;
 var webfileUri;
 var eventId;
 
+function request() {
+    var request = new Array();
+    var url = "" + document.location;
+    var i = url.indexOf('/events/');
+    url = url.substring(i + 8);
+    var i2 = url.lastIndexOf("/");
+
+    var uri = url.substring(0, i2);
+    var uid = url.substring(i2 + 1);
+    request[0] = uri;
+    request[1] = uid;
+
+    return request;
+}
+
 $('body div').on('pageinit', function(event) {
     var r = request();
     webfileId = r[0];

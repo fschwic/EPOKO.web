@@ -1,4 +1,3 @@
-// In Journal View the listing is loaded when the page appears.
 $('#view').on('pageshow', function(event) {
     //console.log('#view.pageshow');
     //var uid = getUrlVars()["uid"];
@@ -10,104 +9,83 @@ $('#view').on('pageshow', function(event) {
 // If Journal View is called directly, pagebeforechange is not bound already (see journallist.js)
 // and the first time the content must be shown while init.
 $('#view').on('pageinit', function(event) {
-    //console.log('#view.pageinit');
-    if(!webfileId){
-	webfileId = getUrlVars()["uri"];
-	webfileUri = "http://www.epoko.net/webfile/dav/" + webfileId + "/public.ics";
-	var uid = getUrlVars()["uid"];
-	showJournal(uid);
-    }
+    // TODO enable for direct call . But pageinit happens for every first call but not if just a param is changed in the URL
+    
+    // console.log('#view.pageinit');
+    // if(!webfileId){
+    //    webfileId = getUrlVars()["uri"];
+    //    webfileUri = "http://www.epoko.net/webfile/dav/" + webfileId + "/public.ics";
+    //    //var uid = getUrlVars()["uid"];
+    //    showJournal(uid);
+    // }
 });
 
 // $('#view').on('swiperight', function(e){
 //     $.mobile.changePage( "#list", { transition: "slide", reverse: "true" });
 // });
 
-function clearJournal(){
-    console.log('clearJournal()');
-    $('#title').text("Loading Journal");
-    $('#summary').text("");
-    $('#created').text("");
-    $('#modified').text("");
-    $('#classification').removeClass("public private");
-    $('#status').removeClass("draft final cancelled");
-    $('#description *').remove();
-    $('#categories *').remove();
-}
-
 function showJournal(uid){
-    clearJournal();
-    console.log('request: '+ serviceURL+webfileUri + '%23' + uid);
-    $.get(serviceURL+webfileUri + '%23' + uid, function(data) {
-	console.log('showJournal(uid).get');
-	journals = $(data).find('VJOURNAL');
-	journal = journals[0];
-	
-	uid = $(journal).find("UID")[0];
-	summary = $(journal).find("SUMMARY")[0];
-	description = $(journal).find("DESCRIPTION")[0];
-	categories = $(journal).find("CATEGORIES");
-	classification = $(journal).find("CLASS")[0];
-	journalStatus = $(journal).find("STATUS");
-	dtstart = $(journal).find("DTSTART")[0];
-	created = $(journal).find("CREATED")[0];
-	dtstamp = $(journal).find("DTSTAMP")[0];
-	dtmodified = $(journal).find("LAST-MODIFIED")[0];
-	
-	$('#editbutton').attr('href',"#edit?uid=" + $(uid).text());
-	
-	$('#title').text("Journal: " + $(summary).text());
-	$('#summary').text($(summary).text());
 
-	$('#created').text($(created).attr('rfc822'));
-	$('#modified').text($(dtmodified).attr('rfc822'));
-	/* if( $(classification).text() === "PRIVATE" ){
-	    $('#classification').addClass("private");
-	} */
-	$('#classification').addClass($(classification).text().toLowerCase());
-	$('#status').addClass($(journalStatus).text().toLowerCase());
-	
-	var creoleParser = new creole({
-	    forIE: document.all,
-	    interwiki: {
-		WikiCreole: 'http://www.wikicreole.org/wiki/',
-		Wikipedia: 'http://en.wikipedia.org/wiki/'
-	    },
-	    linkFormat: '#'
-	});
-	theElement = document.getElementById('description');
-	creoleParser.parse(theElement, $(description).text());	
-	
-	if( categories.length > 0 ){
-	    categoriesText = "";
-	    $.each(categories, function(i, categorie){
-		categoriesText += $(categorie).text() + " ";
-	    });
-	    $('#categories').text(categoriesText);
-	}
-	
-	/*
-	$('#journalFields li').remove();
-	if(dtstart){
-	    $('#journalFields').append('<li>' + $(dtstart).attr('rfc822') + '</li>');
-	}
-	if(dtstamp){
-	    $('#journalFields').append('<li>Stamp on ' + $(dtstamp).attr('rfc822') + '</li>');
-	}
-	if(created){
-	    $('#journalFields').append('<li>Created on ' + $(created).attr('rfc822') + '</li>');
-	}
-	if(dtmodified){
-	    $('#journalFields').append('<li>Modified on ' + $(dtmodified).attr('rfc822') + '</li>');
-	}
-	if(classification){
-	    $('#journalFields').append('<li>' + $(classification).text() + '</li>');
-	}
-	if(journalStatus){
-	    $('#journalFields').append('<li>' + $(journalStatus).text() + '</li>');
-	}
-	$('#journalFields').listview('refresh');
-	*/
+    function clearJournal(){
+        //console.log('clearJournal()');
+        $('#title').text("Loading Journal");
+        $('#summary').text("");
+        $('#created').text("");
+        $('#modified').text("");
+        $('#classification').removeClass("public private");
+        $('#status').removeClass("draft final cancelled");
+        $('#description *').remove();
+        $('#categories *').remove();
+    }
+    
+    function renderJournalView(model) {
+    
+        clearJournal();
+        $('#editbutton').attr('href',"#edit?uid=" + encodeURIComponent(model.uid));
+    
+        $('#title').text("Journal: " + model.summary);
+        $('#summary').text(model.summary);
 
-    }, "xml");
+        $('#created').text(model.created.rfc822);
+        $('#modified').text(model.modified.rfc822);
+        /* if( $(classification).text() === "PRIVATE" ){
+            $('#classification').addClass("private");
+        } */
+        $('#classification').addClass(model.classification.toLowerCase());
+        $('#status').addClass(model.journalStatus.toLowerCase());
+        $('#categories').text(model.categories.join(", "));
+
+        var creoleParser = new creole({
+            forIE: document.all,
+            interwiki: {
+                WikiCreole: 'http://www.wikicreole.org/wiki/',
+                Wikipedia: 'http://en.wikipedia.org/wiki/'
+            },
+            linkFormat: '#'
+        });
+        theElement = document.getElementById('description');
+        creoleParser.parse(theElement, model.description);
+
+    }
+
+    EPOKO.get(uid, function(data){
+        if(! window.xOnLine){
+            $(document).trigger($.Event("online"));
+        }
+        localStorage.setItem(uid, JSON.stringify(data));
+        renderJournalView(data);
+    }, function(){
+        if(window.xOnLine){
+            $(document).trigger($.Event("offline"));
+        }
+        // try to get from local storage
+        var journalData = JSON.parse(localStorage.getItem(uid));
+        if(journalData){
+            //console.log(journalData);
+            renderJournalView(journalData);
+        }
+        else{
+            console.log("Journal not found. Neither online nor in local storage.");
+        }
+    });
 }

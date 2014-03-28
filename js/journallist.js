@@ -1,18 +1,24 @@
-/*jshint browser:true, jquery:true, devel:true, strict:true */
-
+// EPOKO REST Endpoint
 var serviceURL = "http://localhost:8080/restaccess/jqj?cal_webfile=";
+// Identifier of the webfile which consists of hash and username of an EPOKO.webfile concatenated by slash
 var webfileId;
+// URL of the webfile constructed from webfileId
 var webfileUri;
+// Identifier of an event in the webfile
+var uid;
+// Categorie filter value
 var categorieSelection;
-var categorieSet = {};
+// All categories retrieved from the webfile
+var categorieSet;
 
-$('#cats').on('pageinit', function(event) {
+$('#cats').on('pageshow', function(event) {
+    console.log("#cats.pageshow");
     initFromUrl();
     populateCategoriesList();
 });
 
 $('#list').on('pageinit', function(event) {
-    //console.log("#list.pageinit");
+    console.log("#list.pageinit");
     initFromUrl();
     populateJournalList();
 });
@@ -29,46 +35,43 @@ $(document).on( "pagebeforechange", function( e, data ) {
     // We only want to handle changePage() calls where the caller is
     // asking us to load a page by URL.
     if ( typeof data.toPage === "string" ) {
-	// We only want to handle if #journalPage.
-	var u = $.mobile.path.parseUrl( data.toPage );
-	if ( u.hash.search(/^#view/) !== -1 ) {
-	    if ( data.options.fromPage && data.options.fromPage[0].id !== "edit" ) { 
-		var uid = u.hash.replace( /.*uid=/, "" );
-		showJournal(uid);
-		
-		// Now call changePage() and tell it to switch to
-		// the page we just modified.
-		data.options.dataUrl = "#view?uid="+uid;
-		$.mobile.changePage( $('#view'), data.options );
-		
-		// Make sure to tell changePage() we've handled this call so it doesn't
-		// have to do anything.
-		e.preventDefault();
-	    }
-	}
-	else if( u.hash.search(/^#edit/) !== -1 ) {
-	    var uid = u.hash.replace( /.*uid=/, "" );
-	    //$.mobile.changePage( $('#edit'), { transition: "slide" } );
-	    $.get(serviceURL+webfileUri+'%23'+uid, showJournalForm, "xml");
-	    //$.mobile.changePage( $('#edit'), data.options );
-	    e.preventDefault();
-	}
+    // We only want to handle if #journalPage.
+    var u = $.mobile.path.parseUrl( data.toPage );
+    if ( u.hash.search(/^#view/) !== -1 ) {
+        if ( data.options.fromPage && data.options.fromPage[0].id !== "edit" ) { 
+          var uid = u.hash.replace( /.*uid=/, "" );
+          console.log("pagebeforechange to #view");
+          window.uid = uid;
+          showJournal(uid);
+        
+          // Now call changePage() and tell it to switch to
+          // the page we just modified.
+          data.options.dataUrl = "#view?uid="+uid;
+          $.mobile.changePage( $('#view'), data.options );
+        
+          // Make sure to tell changePage() we've handled this call so it doesn't
+          // have to do anything.
+          e.preventDefault();
+        }
     }
-    else {
-	//console.log('without data.toPage');
+    else if( u.hash.search(/^#edit/) !== -1 ) {
+        var uid = u.hash.replace( /.*uid=/, "" );
+        $.mobile.changePage( $('#edit'), { transition: "slide" } );
+        renderJournalEditView(JSON.parse(localStorage.getItem(uid)));
+        e.preventDefault();
+    }
     }
 });
 
 function populateCategoriesList(){
+    categorieSet = {};
     $.get(serviceURL + webfileUri, function(data) {
-        $('categoriesList li').remove();
-        $('#categoriesList').append('<li><a class="ui-link-inherit" href="../journals/#list" onClick="categorieSelection = \'\'; populateJournalList();" data-transition="slide">'
-                + '<h4>All Categories</h4>'
-                + '<span class="ui-li-count">0</span>'
-                + '</a></li>');
+        $('#categoriesList li').remove();
 
         journals = $(data).find('VJOURNAL');
+        journalsCount = 1;
         $.each(journals, function(index, journal) {
+            journalsCount++;
             categories = $(journal).find('CATEGORIES');
             $.each(categories, function(index, categorie){
                 var categorieKey = $(categorie).text().toLowerCase();
@@ -84,6 +87,11 @@ function populateCategoriesList(){
         });
 
         // Categories
+        $('#categoriesList').append('<li><a class="ui-link-inherit" href="../journals/#list" onClick="categorieSelection = \'\'; populateJournalList();" data-transition="slide">'
+                + '<h4>All Categories</h4>'
+                + '<span class="ui-li-count">' + journalsCount + '</span>'
+                + '</a></li>');
+
         var categorieArray = [];
         for(var prop in categorieSet){
             categorieArray.push(prop);
@@ -105,34 +113,37 @@ function populateCategoriesList(){
         catch(e){
             // journlList not initialized
         }
-    }, "xml");
+    }, "xml").fail( function(){
+      console.log("Request to EPOKO service failed!");
+    });
 }
 
 function populateJournalList() {
-//    alert(categorieSelection);
+  //    alert(categorieSelection);
   $('#button-sort .ui-btn-text').text(comperator.title);
 
-    var params = "";
-    if(categorieSelection){
-	params += "&categories=" + categorieSelection;
-    };
+  var params = "";
+  if(categorieSelection){
+    params += "&categories=" + categorieSelection;
+    $('#list-title').text("Kategorie: " + categorieSelection);
+  };
   $.get(serviceURL + webfileUri + params, function(data) {
     $('#journalList li').remove();
     $('#journalListMenu li').remove();
     journals = $(data).find('VJOURNAL');
     journals.sort(comperator);
 
-	var character = "0";
-	$.each(journals, function(index, journal) {
-	    uid = $(journal).find("UID")[0];
-	    summary = $(journal).find("SUMMARY")[0];
-	    description = $(journal).find("DESCRIPTION")[0];
-	    categories = $(journal).find("CATEGORIES");
-	    classification = $(journal).find("CLASS")[0];
-	    status = $(journal).find("STATUS");
-	    dtstart = $(journal).find("DTSTART")[0];
-	    dtstamp = $(journal).find("DTSTAMP")[0];
-	    dtmodified = $(journal).find("LAST-MODIFIED")[0];
+    var character = "0";
+    $.each(journals, function(index, journal) {
+        uid = $(journal).find("UID")[0];
+        summary = $(journal).find("SUMMARY")[0];
+        description = $(journal).find("DESCRIPTION")[0];
+        categories = $(journal).find("CATEGORIES");
+        classification = $(journal).find("CLASS")[0];
+        status = $(journal).find("STATUS");
+        dtstart = $(journal).find("DTSTART")[0];
+        dtstamp = $(journal).find("DTSTAMP")[0];
+        dtmodified = $(journal).find("LAST-MODIFIED")[0];
 
         if (comperator.name.search(/alpha/) === 0) {
             var curCharacter = $(summary).text().substring(0,1).toUpperCase();
@@ -142,38 +153,40 @@ function populateJournalList() {
                 $('#journalListMenu').append('<li data-role="list-divider">' + character + '</li>');
             }
         }
-	    
-	    var categoriesText = []; 
-	    $.each(categories, function(index, categorie){
-    		categoriesText.push($(categorie).text());
+        
+        var categoriesText = []; 
+        $.each(categories, function(index, categorie){
+            categoriesText.push($(categorie).text());
         });
-	    // Overview
-	    $('#journalList').append('<li><a class="ui-link-inherit" href="../journals/#view?uid='+$(uid).text()+'" data-transition="slide">'
-				     + '<p class="ui-li-aside">' + $(dtstart).attr("rfc822") + '</p>'
-				     + '<h4>' + $(summary).text() + '</h4>' 
-				     + '<p>' + $(description).text() + '</p>' 
-				     + '<p><strong>' + categoriesText.join(", ") + '</strong></p>' 
-				     + '</a></li>');
+        // Overview,  onClick="alert(\''+$(uid).text()+'\');"
+        $('#journalList').append('<li><a class="ui-link-inherit" href="../journals/#view?uid='+$(uid).text()+'" data-transition="slide">'
+                     + '<p class="ui-li-aside">' + $(dtstart).attr("rfc822") + '</p>'
+                     + '<h4>' + $(summary).text() + '</h4>' 
+                     + '<p>' + $(description).text() + '</p>' 
+                     + '<p><strong>' + categoriesText.join(", ") + '</strong></p>' 
+                     + '</a></li>');
             // List in journal view
-	    $('#journalListMenu').append('<li><a class="ui-link-inherit" href="#view?uid='+$(uid).text()+'" data-ajax="false">'
-	    		 + '<h4>' + $(summary).text() + '</h4>' 
-	    				 + '<p>' + $(dtstart).attr("rfc822") + '</p>' 
-	    			 + '</a></li>');
-	});
+        $('#journalListMenu').append('<li><a class="ui-link-inherit" href="#view?uid='+$(uid).text()+'" data-ajax="false">'
+                 + '<h4>' + $(summary).text() + '</h4>' 
+                         + '<p>' + $(dtstart).attr("rfc822") + '</p>' 
+                     + '</a></li>');
+    });
 
 
       // don't refresh before init ... or catch
       try{
-	  $('#journalList').listview('refresh');
+      $('#journalList').listview('refresh');
       }
       catch(e){
-	  // journlList not initialized
+      // journlList not initialized
       }
       try{
-	  $('#journalListMenu').listview('refresh');
+      $('#journalListMenu').listview('refresh');
       }
       catch(e){
-	  // journalListMenu not initialized
+      // journalListMenu not initialized
       }
-    }, "xml");
+    }, "xml").fail( function(){
+      alert("Request to EPOKO service failed!");
+    });
 }

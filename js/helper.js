@@ -1,60 +1,3 @@
-function request() {
-    var request = new Array();
-    var url = "" + document.location;
-    var i = url.indexOf('/events/');
-    url = url.substring(i + 8);
-    var i2 = url.lastIndexOf("/");
-
-    var uri = url.substring(0, i2);
-    var uid = url.substring(i2 + 1);
-    request[0] = uri;
-    request[1] = uid;
-
-    return request;
-}
-
-function sendJournal(form) {
-    //var form = $('#journal_edit');
-    var uid = $('#uid_edit');
-    var url = serviceURL + webfileUri;
-
-    var uidVal = $(uid).val();
-    if (uidVal != null && uidVal != "") {
-        url = url + '%23' + uidVal;
-    }
-    postFormData(form, url);
-}
-
-function postFormData(form, postUrl) {
-    var s = form.serialize();
-    //console.log("Serialized Form Data: " + s);
-    $.ajax({
-        type: "POST",
-	url: postUrl,
-        xhrFields: {
-		withCredentials: true
-	},
-        data: s,
-        success: function(data, textStatus, xhr) {
-            //console.log("Successfully submitted. (" + textStatus + ")");
-            var uid = getUrlVars()["uid"];
-            if (uid != null && uid != "") {
-		// uid is only available if we are back on #view
-                showJournal(uid);
-            } else {
-		console.log('can not reload #view after postFormData');
-                location.reload();
-            }
-	}
-    });
-    return true;
-}
-
-function setDateTime(input) {
-    var now = new Date();
-    input.val(now.format('yyyymmdd"T"HHMMss'));
-}
-
 function getUrlVars() {
     var vars = [],
         hash;
@@ -131,3 +74,34 @@ function changeOrder(repopulate){
   repopulate();
 }
 
+/*
+function postFormData(form, postUrl) {
+    var s = form.serialize();
+    //console.log("Serialized Form Data: " + s);
+    $.ajax({
+        type: "POST",
+  url: postUrl,
+        xhrFields: {
+    withCredentials: true
+  },
+        data: s,
+        success: function(data, textStatus, xhr) {
+            //console.log("Successfully submitted. (" + textStatus + ")");
+            var uid = getUrlVars()["uid"];
+            if (uid != null && uid != "") {
+    // uid is only available if we are back on #view
+                showJournal(uid);
+            } else {
+    console.log('can not reload #view after postFormData');
+                location.reload();
+            }
+  }
+    });
+    return true;
+}
+
+function setDateTime(input) {
+    var now = new Date();
+    input.val(now.format('yyyymmdd"T"HHMMss'));
+}
+*/

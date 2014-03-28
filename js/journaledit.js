@@ -6,49 +6,45 @@ $('#edit').on('pageshow', function(event) {
     //});
 });
 
-function showJournalForm(data) {
-    $.mobile.changePage( $('#edit'), { transition: "slide" } );
+function renderJournalEditView(data) {
 
-    journals = $(data).find('VJOURNAL');
-    journal = journals[0];
-
-    uid = $(journal).find("UID")[0];
-    summary = $(journal).find("SUMMARY")[0];
-    description = $(journal).find("DESCRIPTION")[0];
-    categories = $(journal).find("CATEGORIES");
-    classification = $(journal).find("CLASS")[0];
-    journalStatus = $(journal).find("STATUS")[0];
-    dtstart = $(journal).find("DTSTART")[0];
-    dtstamp = $(journal).find("DTSTAMP")[0];
-    dtmodified = $(journal).find("LAST-MODIFIED")[0];
-
-    $('#uid_edit').val($(uid).text());
-    $('#summary_edit').val($(summary).text());
+    $('#uid_edit').val(data.uid);
+    $('#summary_edit').val(data.summary);
     
     var slider = $('#class_edit');
-    slider.val($(classification).text());
+    slider.val(data.classification);
     slider.slider('refresh');
 
     var select = $('#status_edit');
-    select.val($(journalStatus).text());
+    select.val(data.journalStatus);
     select.selectmenu('refresh');
 
-    $('#description_edit').val($(description).text());
+    $('#description_edit').val(data.description);
 
     $('#categories_edit option').remove();
-    if( categories.length > 0 ){
-	categoriesText = "";
-	$.each(categories, function(i, categorie){
-	    categoriesText += $(categorie).text() + " ";
-	    $('#categories_edit').append('<option selected="selected" value="' + $(categorie).text() + '">' + $(categorie).text() + '</option>');
-	});
+    if( data.categories.length > 0 ){
+       $.each(data.categories, function(i, categorie){
+           $('#categories_edit').append('<option selected="selected" value="' + categorie + '">' + categorie + '</option>');
+       });
     }
     $('#categories_edit').selectmenu('refresh');
+}
 
-    //try{
-	//$('#journal_edit').textinput("refresh");
-    //}
-    //catch(e){
-	// // journlList not initialized, on init refresh is implicit
-    //}
+function instanceFromForm(){
+    var uid = $('#uid_edit').val();
+    var o = JSON.parse(localStorage.getItem(uid));
+
+    o.summary = $('#summary_edit').val();
+    o.description = $('#description_edit').val();
+    o.classification = $('#class_edit').val();
+    o.journalStatus = $('#status_edit').val();
+
+    o.categories = $('#categories_edit').val();
+
+    return o;
+}
+
+function sendJournal(form) {
+    var journal = instanceFromForm();
+    EPOKO.post(journal.uid, journal);
 }

@@ -24,10 +24,26 @@
         $.mobile.ajaxLinksEnabled = true;
         console.log("... DONE!");
       });
+
+      window.xOnLine = true;
+      $(document).on('online', function (event) {
+        console.log('You are online!');
+        window.xOnLine = true;
+        $('.network-status').text("Online");
+
+        EPOKO.sendFails();
+
+      });
+      $(document).on('offline', function (event) {
+        console.log('You are offline!');
+        window.xOnLine = false;
+        $('.network-status').text("Offline");
+      });
     </script>
     <script src="../js/jquery.mobile-1.1.1.min.js"></script>
     <script src="../js/creole.js"></script>
     <script src="../js/date.format.js"></script>
+    <script src="../js/EPOKO.journals.js"></script>
     <script src="../js/helper.js"></script>
   </head>
     
@@ -49,7 +65,7 @@
     <div id="list" data-role="page">
 
       <header data-role="header" data-position="fixed">
-        <h1>EPOKO.journals</h1>
+        <h1 id="list-title">EPOKO.journals</h1>
         <a href="#" onClick="changeOrder(populateJournalList)" data-icon="grid" id="button-sort">Sort</a>
         <a href="#add" data-rel="dialog" data-icon="plus" class="ui-btn-right">Add</a>
       </header>
@@ -101,6 +117,7 @@
         <div class="ui-block-b xcontent-primary" id="journal">
           <header>
             <!-- h2 id="summary"></h2 -->
+            <div style="float:left;" class="network-status">Online</div>
             <div class="properties">
               <div id="created"></div>
               <div id="classification"></div>
