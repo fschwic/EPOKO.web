@@ -47,8 +47,10 @@ var EPOKO = (function(){
 
     o.BEGIN = "VJOURNAL";
 
-    o.UID = o.uid;
-    delete o.uid;
+    if( o.uid ) {
+      o.UID = o.uid;
+      delete o.uid;
+    }
     
     o.STATUS = o.journalStatus;
     delete o.journalStatus;
@@ -59,11 +61,15 @@ var EPOKO = (function(){
     o.DTSTART = o.dtstart.ics;
     delete o.dtstart;
     
-    o.CREATED = o.created.ics;
-    delete o.created;
+    if( o.created ) {
+      o.CREATED = o.created.ics;
+      delete o.created;
+    }
     
-    o.DTSTAMP = o.dtstamp.ics;
-    delete o.dtstamp;
+    if( o.dtstamp ) {
+      o.DTSTAMP = o.dtstamp.ics;
+      delete o.dtstamp;
+    }
     
     delete o.modified;
 

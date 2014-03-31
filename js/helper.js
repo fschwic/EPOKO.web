@@ -99,9 +99,4 @@ function postFormData(form, postUrl) {
     });
     return true;
 }
-
-function setDateTime(input) {
-    var now = new Date();
-    input.val(now.format('yyyymmdd"T"HHMMss'));
-}
 */

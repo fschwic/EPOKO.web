@@ -82,24 +82,19 @@
     <!-- Journal Create -->
     <div id="add" data-role="page">
       <header>
-	<h1>Add Journal</h1>
+        <h1>Add Journal</h1>
       </header>
 
       <section data-role="content">
-	<form id="journal_add" accept-charset="ISO-8859-1">
-	
-	  <input name="BEGIN" value="VJOURNAL" type="hidden"/>
-	  <input name="STATUS" value="DRAFT" type="hidden"/>
-	  <input name="CLASS" value="PRIVATE" type="hidden"/>
-	  <input id="dtstart_add" name="DTSTART" type="hidden"/>
+        <form id="journal_add" accept-charset="ISO-8859-1">
 	  
-	  <fieldset data-role="fieldcontain">
-	    <label for="summary_add">Title</label>
-	    <input id="summary_add" name="SUMMARY" type="text" data-mini="true"/>
-	  </fieldset>
+          <fieldset data-role="fieldcontain">
+            <label for="summary_add">Title</label>
+            <input id="summary_add" name="SUMMARY" type="text" data-mini="true"/>
+          </fieldset>
 
-	</form>
-	<a href="#" data-role="button" data-rel="back" onClick="setDateTime($('#dtstart_add')); sendJournal($('#journal_add'));">OK</a>
+        </form>
+        <a href="#" data-role="button" data-rel="back" onClick="sendJournal($('#journal_add'));">OK</a>
       </section>
     </div>
 
