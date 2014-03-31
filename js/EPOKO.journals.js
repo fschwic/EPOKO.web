@@ -99,8 +99,13 @@ var EPOKO = (function(){
     var resourceUrl = serviceURL + j.webfileUri + '%23' + uid;
     console.log('put: ' + resourceUrl);
     var s = j.serviceMapper.forSend(object);
+    console.log(object);
+    console.log(s);
 
-    localStorage.setItem(uid, JSON.stringify(object));
+    if(uid){
+      // no UID means this is an attempt to store a newly created journal
+      localStorage.setItem(uid, JSON.stringify(object));
+    }
 
     $.ajax({
         type: "POST",
@@ -126,14 +131,18 @@ var EPOKO = (function(){
         },
         error: function(jqXHR, status, msg){
           console.log("Failed to submit " + serviceURL + j.webfileUri + '%23' + uid + ".");
-          var fails = JSON.parse(localStorage.getItem("EPOKOjournalsToBeSend"));
-          if(!fails){
-            fails = [];
+
+          // store UID for send it later
+          if(uid){
+            var fails = JSON.parse(localStorage.getItem("EPOKOjournalsToBeSend"));
+            if(!fails){
+              fails = [];
+            }
+            fails.push(uid);
+            console.log(JSON.stringify(fails));
+            localStorage.setItem("EPOKOjournalsToBeSend", JSON.stringify(fails));
+            console.log("Marked " + uid + " for later submission.");
           }
-          fails.push(uid);
-          console.log(JSON.stringify(fails));
-          localStorage.setItem("EPOKOjournalsToBeSend", JSON.stringify(fails));
-          console.log("Marked " + uid + " for later submission.");
 
           if(failCallBack){
             failCallBack(data, status, msg);
