@@ -65,8 +65,11 @@
     <div id="list" data-role="page">
 
       <header data-role="header" data-position="fixed">
+        <div class="ui-grid-a ui-btn-left">
+          <a href="#cats" class="ui-block-a" data-role="button" data-transition="slide" data-direction="reverse" data-icon="arrow-l" id="button-cat">Categories</a>
+          <a href="#" onClick="changeOrder(populateJournalList)" class="ui-block-b" data-role="button" data-icon="grid" id="button-sort">Sort</a>
+        </div>
         <h1 id="list-title">EPOKO.journals</h1>
-        <a href="#" onClick="changeOrder(populateJournalList)" data-icon="grid" id="button-sort">Sort</a>
         <a href="#add" data-rel="dialog" data-icon="plus" class="ui-btn-right">Add</a>
       </header>
 
@@ -103,7 +106,7 @@
     <!-- Journal View -->
     <div id="view" data-role="page">
       <header data-role="header" data-position="fixed">
-        <a href="#list" data-icon="arrow-l">Overview</a>
+        <a href="#list" data-transition="slide" data-direction="reverse" data-icon="arrow-l">Overview</a>
         <h1 id="title"></h1>
         <a id="editbutton" href="#edit" data-transition="slide" data-icon="grid" class="ui-btn-right">Edit</a>
       </header>
