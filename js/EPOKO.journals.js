@@ -3,7 +3,7 @@ var EPOKO = (function(){
 
   // EPOKO REST Endpoint
   var serviceURL = "http://localhost:8080/restaccess/jqj?cal_webfile=";
-  j.webfileUri = "http://www.epoko.net/webfile/dav/61a4caffdc3e005c47afb6eabdd4cae0/BeezleBug/public.ics";
+  j.webfileUri = "";
 
   j.serviceMapper = {};
   j.serviceMapper.fromGet = function(xml){

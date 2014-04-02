@@ -25,7 +25,9 @@ $('#list').on('pageinit', function(event) {
 
 function initFromUrl(){
     webfileId = getUrlVars()["uri"];
-    webfileUri = "http://www.epoko.net/webfile/dav/" + webfileId + "/public.ics";    
+    webfileUri = "http://www.epoko.net/webfile/dav/" + webfileId + "/public.ics";
+    // http://www.epoko.net/webfile/dav/61a4caffdc3e005c47afb6eabdd4cae0/BeezleBug/public.ics
+    EPOKO.webfileUri = webfileUri;
 }
 
 // Listen for any attempts to call changePage().
