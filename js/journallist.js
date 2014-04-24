@@ -58,6 +58,7 @@ $(document).on( "pagebeforechange", function( e, data ) {
     }
     else if( u.hash.search(/^#edit/) !== -1 ) {
         var uid = u.hash.replace( /.*uid=/, "" );
+        console.log("pagebeforechange to #edit");
         $.mobile.changePage( $('#edit'), { transition: "slide" } );
         renderJournalEditView(JSON.parse(localStorage.getItem(uid)));
         e.preventDefault();

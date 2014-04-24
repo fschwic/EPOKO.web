@@ -18,11 +18,9 @@
     <script src="../js/jquery-1.7.1.min.js"></script>
     <script type="application/javascript" language="JavaScript">
       $(document).bind("mobileinit", function(){
-        console.log("Initialising jQuery Mobile ...");
         $.mobile.allowCrossDomainPages = true;
         $.support.cors = true;
         $.mobile.ajaxLinksEnabled = true;
-        console.log("... DONE!");
       });
 
       window.xOnLine = true;
@@ -91,6 +89,7 @@
           <fieldset data-role="fieldcontain">
             <label for="summary_add">Title</label>
             <input id="summary_add" name="SUMMARY" type="text" data-mini="true"/>
+            <input id="category_add" name="CATEGORIES" type="hidden" data-mini="true"/>
           </fieldset>
 
         </form>

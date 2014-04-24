@@ -122,7 +122,8 @@ var EPOKO = (function(){
               showJournal(uid);
             } else {
               console.log('can not reload #view after postFormData');
-              location.reload();
+              //location.reload();
+              populateJournalList();
             }
 
             if(successCallBack){

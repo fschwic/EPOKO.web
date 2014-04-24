@@ -31,6 +31,7 @@ function renderJournalEditView(data) {
 }
 
 function instanceFromForm(){
+    // TODO better give form and select by name of fields instead of using global IDs
     var uid = $('#uid_edit').val();
     var o = JSON.parse(localStorage.getItem(uid));
     if( ! o ) {
@@ -69,11 +70,25 @@ function instanceFromForm(){
     if ( $('#categories_edit').val() ) {
         o.categories = $('#categories_edit').val();
     }
+    else{
+        if ( $('#category_add').val() ) {
+            o.categories = [$('#category_add').val()];
+        }
+        else{
+            o.categories = categorieSelection;
+        }
+    }
 
+    if ( ! o.summary ) {
+        console.log("Journal must have a title (summary).");
+        return null;
+    };
     return o;
 }
 
 function sendJournal(form) {
     var journal = instanceFromForm();
-    EPOKO.post(journal.uid, journal);
+    if (journal) {
+        EPOKO.post(journal.uid, journal);
+    }
 }

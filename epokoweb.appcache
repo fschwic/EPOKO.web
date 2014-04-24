@@ -1,8 +1,9 @@
 CACHE MANIFEST
-# 2014.2
+# 2014.11
 
 # Explicitly cached 'master entries'.
-CACHE:
+#CACHE:
+NETWORK:
 css/jquery.mobile-1.1.1.min.css
 css/jquery.mobile.structure-1.1.1.min.css
 css/styles.css
@@ -23,7 +24,7 @@ js/journalview.js
 js/journaledit.js
 
 # Resources that require the user to be online.
-NETWORK:
+#NETWORK:
 *
 
 # Resources with fallback in case they are not available
