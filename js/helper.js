@@ -31,6 +31,10 @@ function postFormData(form, postUrl) {
     $.ajax({
         type: "POST",
         url: postUrl,
+	xhrFields: {
+	    withCredentials: true
+	},
+	crossDomain: true,
         data: s,
         success: function(data, textStatus, xhr) {
             //console.log("Successfully submitted. (" + textStatus + ")");
