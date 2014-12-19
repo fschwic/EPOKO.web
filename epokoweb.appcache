@@ -1,0 +1,30 @@
+CACHE MANIFEST
+# 2014.12
+
+# Explicitly cached 'master entries'.
+CACHE:
+css/jquery.mobile-1.1.1.min.css
+css/jquery.mobile.structure-1.1.1.min.css
+css/styles.css
+css/images/ajax-loader.gif
+css/images/ajax-loader.png
+css/images/icons-18-black.png
+css/images/icons-18-white.png
+css/images/icons-36-black.png
+css/images/icons-36-white.png
+js/jquery-1.7.1.min.js
+js/jquery.mobile-1.1.1.min.js
+js/creole.js
+js/date.format.js
+js/EPOKO.journals.js
+js/helper.js
+js/journallist.js
+js/journalview.js
+js/journaledit.js
+
+# Resources that require the user to be online.
+NETWORK:
+*
+
+# Resources with fallback in case they are not available
+FALLBACK:

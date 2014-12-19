@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
-<html>
+<html manifest="../epokoweb.appcache">
   <head>
-    <title>EPOKO.journals</title>
+    <title>EPOKO.journals F_add_categories_list</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
 
     <!-- http://matt.might.net/articles/how-to-native-iphone-ipad-apps-in-javascript/ -->
@@ -9,7 +9,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default"/><!-- default, black, black-translucent -->
     <!-- link rel="apple-touch-icon" href="/projects/EPOKO.web/apple-touch-icon.png"/ -->
     <!-- link rel="apple-touch-startup-image" href="320x460-ipad1004x768.png"/ -->
-    
 
     <meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1" />
     <link rel="stylesheet" href="../css/jquery.mobile-1.1.1.min.css" />
@@ -19,27 +18,56 @@
     <script src="../js/jquery-1.7.1.min.js"></script>
     <script type="application/javascript" language="JavaScript">
       $(document).bind("mobileinit", function(){
-        console.log("Initialising jQuery Mobile ...");
         $.mobile.allowCrossDomainPages = true;
         $.support.cors = true;
         $.mobile.ajaxLinksEnabled = true;
-        console.log("... DONE!");
+      });
+
+      window.xOnLine = true;
+      $(document).on('online', function (event) {
+        console.log('You are online!');
+        window.xOnLine = true;
+        $('.network-status').text("Online");
+
+        EPOKO.sendFails();
+
+      });
+      $(document).on('offline', function (event) {
+        console.log('You are offline!');
+        window.xOnLine = false;
+        $('.network-status').text("Offline");
       });
     </script>
     <script src="../js/jquery.mobile-1.1.1.min.js"></script>
     <script src="../js/creole.js"></script>
     <script src="../js/date.format.js"></script>
+    <script src="../js/EPOKO.journals.js"></script>
     <script src="../js/helper.js"></script>
   </head>
     
   <body>
 
+    <!-- Categories List -->
+    <div id="cats" data-role="page">
+
+      <header data-role="header" data-position="fixed">
+        <h1>Categories</h1>
+      </header>
+
+      <section data-role="content">
+        <ul id="categoriesList" data-role="listview" data-filter="true" data-theme="c" data-dividertheme="c" data-filter-theme="c"></ul>
+      </section>      
+    </div>
+
     <!-- Journal List -->
     <div id="list" data-role="page">
 
       <header data-role="header" data-position="fixed">
-        <h1>EPOKO.journals</h1>
-        <a href="#" onClick="changeOrder(populateJournalList)" data-icon="grid" id="button-sort">Sort</a>
+        <div class="ui-grid-a ui-btn-left">
+          <a href="#cats" class="ui-block-a" data-role="button" data-transition="slide" data-direction="reverse" data-icon="arrow-l" id="button-cat">Categories</a>
+          <a href="#" onClick="changeOrder(populateJournalList)" class="ui-block-b" data-role="button" data-icon="grid" id="button-sort">Sort</a>
+        </div>
+        <h1 id="list-title">EPOKO.journals</h1>
         <a href="#add" data-rel="dialog" data-icon="plus" class="ui-btn-right">Add</a>
       </header>
 
@@ -52,31 +80,27 @@
     <!-- Journal Create -->
     <div id="add" data-role="page">
       <header>
-	<h1>Add Journal</h1>
+        <h1>Add Journal</h1>
       </header>
 
       <section data-role="content">
-	<form id="journal_add" accept-charset="ISO-8859-1">
-	
-	  <input name="BEGIN" value="VJOURNAL" type="hidden"/>
-	  <input name="STATUS" value="DRAFT" type="hidden"/>
-	  <input name="CLASS" value="PRIVATE" type="hidden"/>
-	  <input id="dtstart_add" name="DTSTART" type="hidden"/>
+        <form id="journal_add" accept-charset="ISO-8859-1">
 	  
-	  <fieldset data-role="fieldcontain">
-	    <label for="summary_add">Title</label>
-	    <input id="summary_add" name="SUMMARY" type="text" data-mini="true"/>
-	  </fieldset>
+          <fieldset data-role="fieldcontain">
+            <label for="summary_add">Title</label>
+            <input id="summary_add" name="SUMMARY" type="text" data-mini="true"/>
+            <input id="category_add" name="CATEGORIES" type="hidden" data-mini="true"/>
+          </fieldset>
 
-	</form>
-	<a href="#" data-role="button" data-rel="back" onClick="setDateTime($('#dtstart_add')); sendJournal($('#journal_add'));">OK</a>
+        </form>
+        <a href="#" data-role="button" data-rel="back" onClick="sendJournal($('#journal_add'));">OK</a>
       </section>
     </div>
 
     <!-- Journal View -->
     <div id="view" data-role="page">
       <header data-role="header" data-position="fixed">
-        <a href="#list" data-icon="arrow-l">Overview</a>
+        <a href="#list" data-transition="slide" data-direction="reverse" data-icon="arrow-l">Overview</a>
         <h1 id="title"></h1>
         <a id="editbutton" href="#edit" data-transition="slide" data-icon="grid" class="ui-btn-right">Edit</a>
       </header>
@@ -90,6 +114,7 @@
         <div class="ui-block-b xcontent-primary" id="journal">
           <header>
             <!-- h2 id="summary"></h2 -->
+            <div style="float:left;" class="network-status">Online</div>
             <div class="properties">
               <div id="created"></div>
               <div id="classification"></div>
