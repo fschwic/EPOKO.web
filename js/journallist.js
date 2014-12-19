@@ -175,6 +175,7 @@ function populateJournalList() {
                      + '</a></li>');
     });
 
+
       // don't refresh before init ... or catch
       try{
       $('#journalList').listview('refresh');
