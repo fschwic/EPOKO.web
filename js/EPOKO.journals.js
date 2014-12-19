@@ -2,7 +2,7 @@ var EPOKO = (function(){
   var j = {};
 
   // EPOKO REST Endpoint
-  var serviceURL = "http://localhost:8080/restaccess/jqj?cal_webfile=";
+  var serviceURL = "http://core.epoko.net/restaccess/jqj?cal_webfile=";
   j.webfileUri = "";
 
   j.serviceMapper = {};
@@ -51,26 +51,26 @@ var EPOKO = (function(){
       o.UID = o.uid;
       delete o.uid;
     }
-    
+
     o.STATUS = o.journalStatus;
     delete o.journalStatus;
 
     o.CLASS = o.classification;
     delete o.classification;
-    
+
     o.DTSTART = o.dtstart.ics;
     delete o.dtstart;
-    
+
     if( o.created ) {
       o.CREATED = o.created.ics;
       delete o.created;
     }
-    
+
     if( o.dtstamp ) {
       o.DTSTAMP = o.dtstamp.ics;
       delete o.dtstamp;
     }
-    
+
     delete o.modified;
 
     var s = $.param(o, true);
@@ -90,9 +90,9 @@ var EPOKO = (function(){
 
     console.log('get: '+ serviceURL+webfileUri + '%23' + uid);
     $.get(serviceURL + j.webfileUri + '%23' + uid, function(data){
-      successCallBack(j.serviceMapper.fromGet(data)); 
+      successCallBack(j.serviceMapper.fromGet(data));
     }, "xml").fail(failCallBack);
-  
+
   };
 
   j.post = function(uid, object, successCallBack, failCallBack){

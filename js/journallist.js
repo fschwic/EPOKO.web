@@ -1,5 +1,5 @@
 // EPOKO REST Endpoint
-var serviceURL = "http://localhost:8080/restaccess/jqj?cal_webfile=";
+var serviceURL = "http://core.epoko.net/restaccess/jqj?cal_webfile=";
 // Identifier of the webfile which consists of hash and username of an EPOKO.webfile concatenated by slash
 var webfileId;
 // URL of the webfile constructed from webfileId
@@ -33,24 +33,24 @@ function initFromUrl(){
 // Listen for any attempts to call changePage().
 $(document).on( "pagebeforechange", function( e, data ) {
     //console.log("pagebeforechange");
-    
+
     // We only want to handle changePage() calls where the caller is
     // asking us to load a page by URL.
     if ( typeof data.toPage === "string" ) {
     // We only want to handle if #journalPage.
     var u = $.mobile.path.parseUrl( data.toPage );
     if ( u.hash.search(/^#view/) !== -1 ) {
-        if ( data.options.fromPage && data.options.fromPage[0].id !== "edit" ) { 
+        if ( data.options.fromPage && data.options.fromPage[0].id !== "edit" ) {
           var uid = u.hash.replace( /.*uid=/, "" );
           console.log("pagebeforechange to #view");
           window.uid = uid;
           showJournal(uid);
-        
+
           // Now call changePage() and tell it to switch to
           // the page we just modified.
           data.options.dataUrl = "#view?uid="+uid;
           $.mobile.changePage( $('#view'), data.options );
-        
+
           // Make sure to tell changePage() we've handled this call so it doesn't
           // have to do anything.
           e.preventDefault();
@@ -156,22 +156,22 @@ function populateJournalList() {
                 $('#journalListMenu').append('<li data-role="list-divider">' + character + '</li>');
             }
         }
-        
-        var categoriesText = []; 
+
+        var categoriesText = [];
         $.each(categories, function(index, categorie){
             categoriesText.push($(categorie).text());
         });
         // Overview,  onClick="alert(\''+$(uid).text()+'\');"
         $('#journalList').append('<li><a class="ui-link-inherit" href="../journals/#view?uid='+$(uid).text()+'" data-transition="slide">'
                      + '<p class="ui-li-aside">' + $(dtstart).attr("rfc822") + '</p>'
-                     + '<h4>' + $(summary).text() + '</h4>' 
-                     + '<p>' + $(description).text() + '</p>' 
-                     + '<p><strong>' + categoriesText.join(", ") + '</strong></p>' 
+                     + '<h4>' + $(summary).text() + '</h4>'
+                     + '<p>' + $(description).text() + '</p>'
+                     + '<p><strong>' + categoriesText.join(", ") + '</strong></p>'
                      + '</a></li>');
             // List in journal view
         $('#journalListMenu').append('<li><a class="ui-link-inherit" href="#view?uid='+$(uid).text()+'" data-ajax="false">'
-                 + '<h4>' + $(summary).text() + '</h4>' 
-                         + '<p>' + $(dtstart).attr("rfc822") + '</p>' 
+                 + '<h4>' + $(summary).text() + '</h4>'
+                         + '<p>' + $(dtstart).attr("rfc822") + '</p>'
                      + '</a></li>');
     });
 

@@ -10,7 +10,7 @@ function renderJournalEditView(data) {
 
     $('#uid_edit').val(data.uid);
     $('#summary_edit').val(data.summary);
-    
+
     var slider = $('#class_edit');
     slider.val(data.classification);
     slider.slider('refresh');
@@ -46,6 +46,7 @@ function instanceFromForm(){
         o.dtstart.ics = now.format('yyyymmdd"T"HHMMss');
     }
 
+    console.log(JSON.stringify(o));
     if( o.summary ) {
         o.summary = $('#summary_edit').val();
     }
@@ -53,10 +54,12 @@ function instanceFromForm(){
         o.summary = $('#summary_add').val();
     }
     o.description = $('#description_edit').val();
-    if( $('#class_edit').val() || o.classification ){
+    if( o.classification ){
+      console.log("set classification " + $('#class_edit').val());
         o.classification = $('#class_edit').val();
     }
     else{
+      console.log("set private");
         o.classification = "PRIVATE";
     }
 
