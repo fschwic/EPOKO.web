@@ -1,9 +1,31 @@
 function getUrlVars() {
     var vars = [],
         hash;
+    var query = window.location.href.slice(window.location.href.indexOf('?') + 1);
+    console.log(query);
+    var params = query.split("&");
+    $.each(params, function(i, param){
+      var pair = param.split("=");
+      if(pair[1].indexOf("#") > -1){
+        pair[1] = pair[1].substring(0, pair[1].indexOf("#"))
+      }
+      vars[pair[0]] = pair[1];
+    });
+    console.log(vars);
+
+    return vars;
+}
+
+/*
+function getUrlVars() {
+    var vars = [],
+        hash;
     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('?');
+    console.log(hashes);
     for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
+        hash = hashes[i];
+        console.log(hash.split("&"));
+        hash = hash.split('=');
         if (hash[1]) {
             vars.push(hash[0]);
             var indexOfHash = hash[1].indexOf('#');
@@ -16,6 +38,7 @@ function getUrlVars() {
     }
     return vars;
 }
+*/
 
 function decodeEntities(str) {
     return str.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');

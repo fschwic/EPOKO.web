@@ -24,8 +24,10 @@ $('#list').on('pageinit', function(event) {
 });
 
 function initFromUrl(){
+    console.log($.query);
     webfileId = getUrlVars()["uri"];
     webfileUri = "http://www.epoko.net/webfile/dav/" + webfileId + "/public.ics";
+    categorieSelection = getUrlVars()["cat"];
     // http://www.epoko.net/webfile/dav/61a4caffdc3e005c47afb6eabdd4cae0/BeezleBug/public.ics
     EPOKO.webfileUri = webfileUri;
 }

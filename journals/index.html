@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html manifest="../epokoweb.appcache">
   <head>
-    <title>EPOKO.journals F_add_categories_list</title>
+    <title>EPOKO.journals</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
 
     <!-- http://matt.might.net/articles/how-to-native-iphone-ipad-apps-in-javascript/ -->
@@ -47,6 +47,22 @@
     
   <body>
 
+    <!-- Journal List -->
+    <div id="list" data-role="page">
+
+      <header data-role="header" data-position="fixed">
+        <a href="#cats" data-role="button" data-transition="slide" data-direction="reverse" data-icon="arrow-l" id="button-cat">Categories</a>
+        <!-- a href="#" onClick="changeOrder(populateJournalList)" class="ui-block-b" data-role="button" data-icon="grid" id="button-sort">Sort</a -->
+        <h1 id="list-title">EPOKO.journals</h1>
+        <a href="#add" data-rel="dialog" data-icon="plus" class="ui-btn-right">Add</a>
+      </header>
+
+      <section data-role="content">
+		<ul id="journalList" data-role="listview" data-filter="true" data-theme="c" data-dividertheme="c" data-filter-theme="c"></ul>
+      </section>
+	
+    </div>
+
     <!-- Categories List -->
     <div id="cats" data-role="page">
 
@@ -57,24 +73,6 @@
       <section data-role="content">
         <ul id="categoriesList" data-role="listview" data-filter="true" data-theme="c" data-dividertheme="c" data-filter-theme="c"></ul>
       </section>      
-    </div>
-
-    <!-- Journal List -->
-    <div id="list" data-role="page">
-
-      <header data-role="header" data-position="fixed">
-        <div class="ui-grid-a ui-btn-left">
-          <a href="#cats" class="ui-block-a" data-role="button" data-transition="slide" data-direction="reverse" data-icon="arrow-l" id="button-cat">Categories</a>
-          <a href="#" onClick="changeOrder(populateJournalList)" class="ui-block-b" data-role="button" data-icon="grid" id="button-sort">Sort</a>
-        </div>
-        <h1 id="list-title">EPOKO.journals</h1>
-        <a href="#add" data-rel="dialog" data-icon="plus" class="ui-btn-right">Add</a>
-      </header>
-
-      <section data-role="content">
-		<ul id="journalList" data-role="listview" data-filter="true" data-theme="c" data-dividertheme="c" data-filter-theme="c"></ul>
-      </section>
-	
     </div>
 
     <!-- Journal Create -->
