@@ -1,0 +1,14 @@
+CACHE MANIFEST
+# 2015.0
+
+# Explicitly cached 'master entries'.
+CACHE:
+../js/jquery-1.7.1.min.js
+../js/EPOKO.js
+
+# Resources that require the user to be online.
+NETWORK:
+*
+
+# Resources with fallback in case they are not available
+FALLBACK:

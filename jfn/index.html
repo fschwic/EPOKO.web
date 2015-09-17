@@ -1,0 +1,119 @@
+<!DOCTYPE HTML>
+<html><!-- manifest="jfn.appcache" -->
+  <head>
+    <title>EPOKO.js Test</title>
+
+    <style type="text/css">
+      ul {
+        float: left;
+      }
+      ul.nav {
+        list-style: none;
+        background-color: #cccccc;
+        padding: 1em;
+        margin: 1em;
+      }
+      #entries li {
+        list-style: none;
+        background-color: #cccccc;
+        padding: 1em;
+        margin: 1em;
+        margin-top: 0em;
+      }
+      #entries li h4 {
+        margin: 0em;
+        padding: 0em;
+      }
+      #entries li p {
+        margin: 0em;
+        padding: 0em;
+      }
+    </style>
+
+    <script src="../js/jquery-1.7.1.min.js"></script>
+    <script src="../js/EPOKO.js"></script>
+    <script type="application/javascript" language="JavaScript">
+
+      window.xOnLine = true;
+      $(document).on('online', function (event) {
+        console.log('You are online!');
+        window.xOnLine = true;
+        $('.network-status').text("Online");
+
+        //EPOKO.sendFails();
+
+      });
+      $(document).on('offline', function (event) {
+        console.log('You are offline!');
+        window.xOnLine = false;
+        $('.network-status').text("Offline");
+      });
+
+      var jfnIcs = "http://www.epoko.net/webfile/dav/71c8cdcf465bf7a36ab3de2c38759229/jfn/public.ics&cal_year=2015&cal_month=10&cal_day=6";
+      var jfnIcsCurrentHour = jfnIcs + "&cal_hour=-0&cal_minute=-0&cal_length=0H";
+      var jfnIcsRestaurant = jfnIcs + "&location=Restaurant";
+      var jfnIcsTrack1 = jfnIcs + "&location=Track%201";
+      var jfnIcsTrack2 = jfnIcs + "&location=Track%202";
+      var jfnIcsTrack3 = jfnIcs + "&location=Track%203";
+
+      function dateAscComperator(a, b){
+        var keyA = a.dtstart.ics;
+        var keyB = b.dtstart.ics;
+        return (keyA > keyB) ? 1 : -1;
+      }
+
+      function showEntries(data){
+        data.sort(dateAscComperator);
+
+        $('#entries li').remove();
+        $.each(data, function(index, entry){
+          $('#entries').append('<li>' + 
+            '<p>' + entry.dtstart.rfc822 + '</p>' + 
+            '<h4><a href="' + entry.url + '">' + entry.summary + '</a></h4>' + 
+            '<p>' + entry.location + '</p>' +
+            '</li>');
+        });
+      }
+
+      function showError(err){
+        console.log(err);
+      }
+
+      function changeView(url){
+        E.get(url, null, showEntries, showError);        
+      }
+
+      function doIt(){
+        E.get(jfnIcs, null, showEntries, function(err){
+            console.log("found my error: " + err);
+        });
+      }
+
+      function fromLocalOrLoad(url, id){
+        var onSuccess = function(data){
+            console.log("Got data");
+            console.log(data);
+        };
+
+        E.getLocal(url, id, onSuccess, function(err){
+            console.log("Local failed. Loading from remote.");
+            E.get(url, id, onSuccess);
+        });
+      }
+    </script>
+  </head>
+  <body>
+    
+    <h1>JFN15</h1>
+    <ul class="nav">
+      <li><a href="#" onClick="changeView(jfnIcs);">All</a></li>
+      <li><a href="#" onClick="changeView(jfnIcsCurrentHour);">Current Hour</a></li>
+      <li><a href="#" onClick="changeView(jfnIcsTrack1);">Track 1</a></li>
+      <li><a href="#" onClick="changeView(jfnIcsTrack2);">Track 2</a></li>
+      <li><a href="#" onClick="changeView(jfnIcsTrack3);">Track 3</a></li>
+      <li><a href="#" onClick="changeView(jfnIcsRestaurant);">Restaurant</a></li>
+    </ul>
+
+    <ul id="entries"></ul>
+  </body>
+</html>
