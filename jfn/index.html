@@ -56,6 +56,22 @@
       var jfnIcsTrack2 = jfnIcs + "&location=Track%202";
       var jfnIcsTrack3 = jfnIcs + "&location=Track%203";
 
+      function prefetch(){
+        var onSuccess = function(){
+          console.log("prefetch");
+        }
+
+        E.get(jfnIcs, null, onSuccess);
+        E.get(jfnIcsCurrentHour, null, onSuccess);
+        E.get(jfnIcsRestaurant, null, onSuccess);
+        E.get(jfnIcsTrack1, null, onSuccess);
+        E.get(jfnIcsTrack2, null, onSuccess);
+        E.get(jfnIcsTrack3, null, onSuccess);
+
+        changeView(jfnIcs);
+      }
+      $(document).ready(prefetch);
+
       function dateAscComperator(a, b){
         var keyA = a.dtstart.ics;
         var keyB = b.dtstart.ics;
@@ -77,29 +93,13 @@
 
       function showError(err){
         console.log(err);
+        alert(err);
       }
 
       function changeView(url){
         E.get(url, null, showEntries, showError);        
       }
 
-      function doIt(){
-        E.get(jfnIcs, null, showEntries, function(err){
-            console.log("found my error: " + err);
-        });
-      }
-
-      function fromLocalOrLoad(url, id){
-        var onSuccess = function(data){
-            console.log("Got data");
-            console.log(data);
-        };
-
-        E.getLocal(url, id, onSuccess, function(err){
-            console.log("Local failed. Loading from remote.");
-            E.get(url, id, onSuccess);
-        });
-      }
     </script>
   </head>
   <body>
