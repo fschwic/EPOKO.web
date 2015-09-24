@@ -1,37 +1,142 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html manifest="jfn.appcache">
-  <head>
-    <title>EPOKO.js Test</title>
+<head>
+    <meta charset="utf-8">
+
+    <!-- meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *" -->
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <title>JavaForumNord</title>
 
     <style type="text/css">
-      ul {
+    /* 
+    light orange #FFCC99
+    light blue #99CCFF
+    light green #CCFFCC
+    font blue #08b4da
+    font black #1A1A1A
+    font white #ffffff
+    link blue #00a8d6
+    */
+
+    body {
+        color: #1A1A1A;
+        font-family: helvetica,arial;
+        padding: 0em;
+        margin: 0em;
+    }
+
+    header {
+        background-color: #CCFFCC;
+        height: 3em;
+        overflow: hidden;
+        padding: 0em;
+        margin: 0em;
+    }
+
+    header .menu-icon {
         float: left;
-      }
-      ul.nav {
+        padding-top: .9375em;
+        padding-left: .8125em;
+        padding-right: .8125em;
+    }
+
+    header .menu-icon img {
+        width: 1.375em;
+        height: 1.125em;
+    }
+
+    header .title {
+        float: left;
+    }
+
+    header h1 {
+        float: left;
+        padding: 0em;
+        margin: 0.18em;
+        vertical-align: middle;
+    }
+
+    header .logo {
+        height: 3em;
+        padding: 0em;
+        margin: 0em;
+        margin-left: .3em;
+    }
+
+    main {
+        position: absolute;
+        left: 0em;
+        right: 0em;
+    }
+
+    @media screen and (min-width: 768px){
+        main {
+            position: absolute;
+            left: 11em;
+            right: 0em;
+        }
+        .nav {
+            left: -11em !important;
+        }
+    }
+
+    ul {
+        float: left;
+    }
+    ul.nav {
         list-style: none;
-        background-color: #cccccc;
-        padding: 1em;
-        margin: 1em;
-      }
-      #entries li {
-        list-style: none;
-        background-color: #cccccc;
-        padding: 1em;
-        margin: 1em;
+    }
+    .nav {
+        position: absolute;
+        top: 0em;
+        left: -11em;
+        z-index: 9;
+        width: 10em;
+        height: 100%;
+        //background-color: #FFCC99;
+        background: -webkit-linear-gradient(left, #FFCC99 95%, #FFBB88);
+        background: -o-linear-gradient(left, #FFCC99 95%, #FFBB88);
+        background: -moz-linear-gradient(left, #FFCC99 95%, #FFBB88);
+        background: linear-gradient(left, #FFCC99 95%, #FFBB88);
+        padding: 0.5em;
+        margin: 0em;
+        -webkit-transition: left 0.5s;
+        transition: left 0.5s;
+    }
+
+    #entries {
+        padding: 0em;
         margin-top: 0em;
-      }
-      #entries li h4 {
+        width: 100%;
+    }
+    #entries li {
+        list-style: none;
+        background-color: #99CCFF;
+        padding: 0.7em;
+        margin: 0em;
+        margin-bottom: 0.2em;
+    }
+    #entries li h4 {
         margin: 0em;
         padding: 0em;
-      }
-      #entries li p {
+    }
+    #entries li p {
         margin: 0em;
         padding: 0em;
-      }
+    }
+
+    #twitter-widget-0 {
+        max-width: inherit !important;
+    }
+
     </style>
 
     <script src="../js/jquery-1.7.1.min.js"></script>
     <script src="../js/EPOKO.js"></script>
+
     <script type="application/javascript" language="JavaScript">
 
       window.xOnLine = true;
@@ -50,7 +155,7 @@
       });
 
       var jfnIcs = "http://www.epoko.net/webfile/dav/71c8cdcf465bf7a36ab3de2c38759229/jfn/public.ics&cal_year=2015&cal_month=10&cal_day=6";
-      var jfnIcsCurrentHour = jfnIcs + "&cal_hour=-0&cal_minute=-0&cal_length=0H";
+      var jfnIcsCurrentHour = jfnIcs + "&cal_hour=-0&cal_minute=-0&cal_length=1H";
       var jfnIcsRestaurant = jfnIcs + "&location=Restaurant";
       var jfnIcsTrack1 = jfnIcs + "&location=Track%201";
       var jfnIcsTrack2 = jfnIcs + "&location=Track%202";
@@ -68,7 +173,7 @@
         E.get(jfnIcsTrack2, null, onSuccess);
         E.get(jfnIcsTrack3, null, onSuccess);
 
-        changeView(jfnIcs);
+        changeView(jfnIcsCurrentHour, true);
       }
       $(document).ready(prefetch);
 
@@ -83,7 +188,7 @@
 
         $('#entries li').remove();
         $.each(data, function(index, entry){
-          $('#entries').append('<li>' + 
+          $('#entries').append('<li id="' + entry.uid + '">' + 
             '<p>' + entry.dtstart.rfc822 + '</p>' + 
             '<h4><a href="' + entry.url + '">' + entry.summary + '</a></h4>' + 
             '<p>' + entry.location + '</p>' +
@@ -95,24 +200,96 @@
         console.log(err);
       }
 
-      function changeView(url){
+      E.on('update', function(data){
+        $.each(data, function(index, entry){
+            if($('#' + entry.uid)){
+                // entry from update currently in DOM
+                console.log("Updating view for " + entry.uid);
+                $('#' + entry.uid).empty();
+                $('#' + entry.uid).append('<p>' + entry.dtstart.rfc822 + '</p>' + 
+                    '<h4><a href="' + entry.url + '">' + entry.summary + '</a></h4>' + 
+                    '<p>' + entry.location + '</p>');
+            }
+        });
+      });
+
+      function changeView(url, displayExtras){
+        if(displayExtras){
+            $('#teaser').css('display', 'block');
+            $('#twitter').css('display', 'block');
+        }
+        else{
+            $('#teaser').css('display', 'none');
+            $('#twitter').css('display', 'none');
+        }
         E.get(url, null, showEntries, showError);        
       }
 
     </script>
-  </head>
-  <body>
-    
-    <h1>JFN15</h1>
-    <ul class="nav">
-      <li><a href="#" onClick="changeView(jfnIcs);">All</a></li>
-      <li><a href="#" onClick="changeView(jfnIcsCurrentHour);">Current Hour</a></li>
-      <li><a href="#" onClick="changeView(jfnIcsTrack1);">Track 1</a></li>
-      <li><a href="#" onClick="changeView(jfnIcsTrack2);">Track 2</a></li>
-      <li><a href="#" onClick="changeView(jfnIcsTrack3);">Track 3</a></li>
-      <li><a href="#" onClick="changeView(jfnIcsRestaurant);">Restaurant</a></li>
-    </ul>
 
-    <ul id="entries"></ul>
-  </body>
+</head>
+<body>
+
+    <header>
+        <span class="menu-icon glyphicon glyphicon-menu-hamburger"><img src="glyphicons/png/glyphicons-517-menu-hamburger.png"></span>
+        <span class="title"><h1>Java Forum Nord</h1></span>
+        <img class="logo" src="img/logo.png">
+    </header>
+
+    <main>
+
+        <ul class="nav">
+            <li><a href="#" onClick="changeView(jfnIcsCurrentHour, true);">Home</a></li>
+            <li><a href="#" onClick="changeView(jfnIcs);">Alle Vorträge</a></li>
+            <li><a href="#" onClick="changeView(jfnIcsTrack1);">Track 1</a></li>
+            <li><a href="#" onClick="changeView(jfnIcsTrack2);">Track 2</a></li>
+            <li><a href="#" onClick="changeView(jfnIcsTrack3);">Track 3</a></li>
+            <li><a href="#" onClick="changeView(jfnIcsRestaurant);">Restaurant</a></li>
+        </ul>
+
+        <section id="teaser">
+            <p style="margin: 1em;">Voll Cool! Java Forum Nord in Hannover am 6.10. !!!</p>
+        </section>
+
+        <section id="program">
+            <ul id="entries"></ul>
+        </section>
+
+        <section id="twitter">
+            <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/JavaForumNord" data-widget-id="646770499444428801">Tweets by @JavaForumNord</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        </section>
+
+    </main>
+
+    <footer>
+    </footer>
+
+    <script type="text/javascript">
+
+      $('.menu-icon').on('click', function(){
+        var nav = $('.nav');
+        var cur = nav.css('left');
+        if(cur.indexOf("0") === 0){
+          $('.nav').css('left', "-11em");
+        }
+        else {
+          $('.nav').css('left', "0em");
+        }
+      });
+
+      $('.nav').on('click', function(){
+        $(this).css('left', "-11em");
+      });
+
+      $('main').on('click', function(){
+        $('.nav').css('left', "-11em");
+      });
+
+      setTimeout(function(){
+        $('#twitter-widget-0').contents().find('.timeline').css('max-width', "inherit");
+      }, 1000);
+
+    </script>
+</body>
 </html>
