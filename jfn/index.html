@@ -50,6 +50,8 @@
 
     header .title {
         float: left;
+        position: absolute;
+        white-space: nowrap;
     }
 
     header h1 {
@@ -60,6 +62,8 @@
     }
 
     header .logo {
+        position: absolute;
+        right: 0em;
         height: 3em;
         padding: 0em;
         margin: 0em;
@@ -98,7 +102,7 @@
     .nav {
         position: absolute;
         top: 0em;
-        left: -11.1em;
+        left: -11.2em;
         z-index: 9;
         width: 10em;
         height: 100%;
@@ -178,19 +182,32 @@
           console.log("prefetch");
         }
 
-        E.get(jfnIcs, null, onSuccess);
-        E.get(jfnIcsCurrentHour, null, onSuccess);
-        E.get(jfnIcsRestaurant, null, onSuccess);
-        E.get(jfnIcsTrack1, null, onSuccess);
-        E.get(jfnIcsTrack2, null, onSuccess);
-        E.get(jfnIcsTrack3, null, onSuccess);
-
+        // init view
+        E.on('update', updateTalkListHandler);
         changeView(jfnIcsCurrentHour, true);
-        
-        // add update handler when prefetching is finished :-/
-        setTimeout(function(){
-            E.on('update', updateTalkListHandler);
-        }, 5000);
+        $(document).ajaxStop(function(){
+            console.log("First ajaxStop after initial changeView.");
+            $(this).unbind("ajaxStop");
+
+            // remove update handler for prefetching
+            E.off('update');
+
+            E.get(jfnIcs, null, onSuccess);
+            //E.get(jfnIcsCurrentHour, null, onSuccess);
+            E.get(jfnIcsRestaurant, null, onSuccess);
+            E.get(jfnIcsTrack1, null, onSuccess);
+            E.get(jfnIcsTrack2, null, onSuccess);
+            E.get(jfnIcsTrack3, null, onSuccess);
+
+            // add update handler when prefetching is finished :-/
+            $(document).ajaxStop(function(){
+                console.log("Second ajaxStop after prefetching.");
+                $(this).unbind("ajaxStop");
+                E.on('update', updateTalkListHandler);
+            });
+
+        });
+
       }
       $(document).ready(prefetch);
 

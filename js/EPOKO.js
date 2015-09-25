@@ -16,6 +16,15 @@ var E = (function ($) {
         }
     };
 
+    E.off = function(event){
+        if(event === "update"){
+            updateHandler = [];
+        }
+        else if(event === "delete"){
+            deleteHandler = [];
+        }
+    };
+
     var updateHandler = [];
     var deleteHandler = [];
 
