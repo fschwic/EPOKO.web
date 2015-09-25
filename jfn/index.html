@@ -72,6 +72,12 @@
         right: 0em;
     }
 
+    @media screen and (max-width: 767px){
+        .nav {
+            box-shadow: 2px 2px 2px #999;
+        }
+    }
+
     @media screen and (min-width: 768px){
         main {
             position: absolute;
@@ -92,7 +98,7 @@
     .nav {
         position: absolute;
         top: 0em;
-        left: -11em;
+        left: -11.1em;
         z-index: 9;
         width: 10em;
         height: 100%;
@@ -128,6 +134,11 @@
         padding: 0em;
     }
 
+    #twitter {
+        /* initially do not show, might be switched on */
+        display: none;
+    }
+
     #twitter-widget-0 {
         max-width: inherit !important;
     }
@@ -144,7 +155,7 @@
         console.log('You are online!');
         window.xOnLine = true;
         $('.network-status').text("Online");
-
+        $('#twitter').css('display', 'block');
         //EPOKO.sendFails();
 
       });
@@ -152,6 +163,7 @@
         console.log('You are offline!');
         window.xOnLine = false;
         $('.network-status').text("Offline");
+        $('#twitter').css('display', 'none');
       });
 
       var jfnIcs = "http://www.epoko.net/webfile/dav/71c8cdcf465bf7a36ab3de2c38759229/jfn/public.ics&cal_year=2015&cal_month=10&cal_day=6";
@@ -174,6 +186,11 @@
         E.get(jfnIcsTrack3, null, onSuccess);
 
         changeView(jfnIcsCurrentHour, true);
+        
+        // add update handler when prefetching is finished :-/
+        setTimeout(function(){
+            E.on('update', updateTalkListHandler);
+        }, 5000);
       }
       $(document).ready(prefetch);
 
@@ -183,40 +200,65 @@
         return (keyA > keyB) ? 1 : -1;
       }
 
+      // to be added after prefetching
+      function updateTalkListHandler(data){
+        data.sort(dateAscComperator);
+        var pref;
+        var entriesInUpdate = [];
+
+        $.each(data, function(index, entry){
+            if($('#' + entry.uid).length){
+                // entry from update currently in DOM
+                console.log("Updating view for " + entry.uid);
+                $('#' + entry.uid).empty();
+                appendTalkListView(true, entry.uid, entry.dtstart.rfc822, entry.summary, entry.location, entry.url);
+            }
+            else{
+                // entry should be added
+                console.log("Entry " + entry.uid + " should be added.");
+                appendTalkListView(false, entry.uid, entry.dtstart.rfc822, entry.summary, entry.location, entry.url);
+            }
+            pref = entry.uid;
+            entriesInUpdate.push(entry.uid);
+        });
+
+        // remove no longer existing entries
+        $.each($('#entries li'), function(index, entry){
+            if( $.inArray(entry.id, entriesInUpdate) < 0 ){
+                console.log("Removing from view " + entry.id);
+                $('#' + entry.id).remove();
+            }
+        });
+      }
+
       function showEntries(data){
         data.sort(dateAscComperator);
 
         $('#entries li').remove();
         $.each(data, function(index, entry){
-          $('#entries').append('<li id="' + entry.uid + '">' + 
-            '<p>' + entry.dtstart.rfc822 + '</p>' + 
-            '<h4><a href="' + entry.url + '">' + entry.summary + '</a></h4>' + 
-            '<p>' + entry.location + '</p>' +
-            '</li>');
+          appendTalkListView(false, entry.uid, entry.dtstart.rfc822, entry.summary, entry.location, entry.url);
         });
+      }
+
+      function appendTalkListView(isUpdate, id, time, summary, location, url){
+        if(!isUpdate){
+            $('#entries').append('<li id="' + id + '"></li>');
+        }
+        $('#' + id).append('<p>' + time + '</p>' + 
+            '<h4><a href="' + url + '">' + summary + '</a></h4>' + 
+            '<p>' + location + '</p>');
       }
 
       function showError(err){
         console.log(err);
       }
 
-      E.on('update', function(data){
-        $.each(data, function(index, entry){
-            if($('#' + entry.uid)){
-                // entry from update currently in DOM
-                console.log("Updating view for " + entry.uid);
-                $('#' + entry.uid).empty();
-                $('#' + entry.uid).append('<p>' + entry.dtstart.rfc822 + '</p>' + 
-                    '<h4><a href="' + entry.url + '">' + entry.summary + '</a></h4>' + 
-                    '<p>' + entry.location + '</p>');
-            }
-        });
-      });
-
       function changeView(url, displayExtras){
         if(displayExtras){
             $('#teaser').css('display', 'block');
-            $('#twitter').css('display', 'block');
+            if(window.xOnLine){
+                $('#twitter').css('display', 'block');
+            }
         }
         else{
             $('#teaser').css('display', 'none');
@@ -271,7 +313,7 @@
         var nav = $('.nav');
         var cur = nav.css('left');
         if(cur.indexOf("0") === 0){
-          $('.nav').css('left', "-11em");
+          $('.nav').css('left', "-11.2em");
         }
         else {
           $('.nav').css('left', "0em");
@@ -279,11 +321,11 @@
       });
 
       $('.nav').on('click', function(){
-        $(this).css('left', "-11em");
+        $(this).css('left', "-11.2em");
       });
 
       $('main').on('click', function(){
-        $('.nav').css('left', "-11em");
+        $('.nav').css('left', "-11.2em");
       });
 
       setTimeout(function(){
