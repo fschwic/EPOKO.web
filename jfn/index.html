@@ -19,6 +19,10 @@
     font black #1A1A1A
     font white #ffffff
     link blue #00a8d6
+
+    Polizei Blau 004C91
+    Polizei Grün 006F43
+    Feuerwehr Rot FC0A1C
     */
 
     body {
@@ -116,6 +120,14 @@
         -webkit-transition: left 0.5s;
         transition: left 0.5s;
     }
+    .nav li {
+        padding: 0.5em;
+        border-bottom: 1px solid white;
+        font-weight: bold;
+    }
+    .nav li a {
+        text-decoration: none;
+    }
 
     #entries {
         padding: 0em;
@@ -136,6 +148,11 @@
     #entries li p {
         margin: 0em;
         padding: 0em;
+    }
+
+    .what a img {
+        float: right;
+        height: .8125em;
     }
 
     #twitter {
@@ -214,6 +231,9 @@
       function dateAscComperator(a, b){
         var keyA = a.dtstart.ics;
         var keyB = b.dtstart.ics;
+        if(keyA === keyB){
+            return a.location > b.location ? 1 : -1;
+        }
         return (keyA > keyB) ? 1 : -1;
       }
 
@@ -228,12 +248,12 @@
                 // entry from update currently in DOM
                 console.log("Updating view for " + entry.uid);
                 $('#' + entry.uid).empty();
-                appendTalkListView(true, entry.uid, entry.dtstart.rfc822, entry.summary, entry.location, entry.url);
+                appendTalkListView(true, entry.uid, entry.dtstart.rfc822, entry.dtend.rfc822, entry.summary, entry.location, entry.url);
             }
             else{
                 // entry should be added
                 console.log("Entry " + entry.uid + " should be added.");
-                appendTalkListView(false, entry.uid, entry.dtstart.rfc822, entry.summary, entry.location, entry.url);
+                appendTalkListView(false, entry.uid, entry.dtstart.rfc822, entry.dtend.rfc822, entry.summary, entry.location, entry.url);
             }
             pref = entry.uid;
             entriesInUpdate.push(entry.uid);
@@ -253,17 +273,20 @@
 
         $('#entries li').remove();
         $.each(data, function(index, entry){
-          appendTalkListView(false, entry.uid, entry.dtstart.rfc822, entry.summary, entry.location, entry.url);
+          appendTalkListView(false, entry.uid, entry.dtstart.rfc822, entry.dtend.rfc822, entry.summary, entry.location, entry.url);
         });
       }
 
-      function appendTalkListView(isUpdate, id, time, summary, location, url){
+      function appendTalkListView(isUpdate, id, start, end, summary, location, url){
         if(!isUpdate){
             $('#entries').append('<li id="' + id + '"></li>');
         }
-        $('#' + id).append('<p>' + time + '</p>' + 
-            '<h4><a href="' + url + '">' + summary + '</a></h4>' + 
-            '<p>' + location + '</p>');
+        $('#' + id).append('<div class="when">' + start.substr(16,5) + ' - ' + end.substr(16,5) + '</div>' + 
+            '<div class="what">' + 
+            '<h4>' + summary + '</h4>' + 
+            '<span>' + location + '</span>' +
+            '<a href="' + url + '"><img src="glyphicons/png/glyphicons-51-link.png"></a>' +
+            '</div>');
       }
 
       function showError(err){
