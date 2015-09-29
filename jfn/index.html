@@ -38,6 +38,7 @@
         overflow: hidden;
         padding: 0em;
         margin: 0em;
+        min-width: 350px;
     }
 
     header .menu-icon {
@@ -80,23 +81,6 @@
         right: 0em;
     }
 
-    @media screen and (max-width: 767px){
-        .nav {
-            box-shadow: 2px 2px 2px #999;
-        }
-    }
-
-    @media screen and (min-width: 768px){
-        main {
-            position: absolute;
-            left: 11em;
-            right: 0em;
-        }
-        .nav {
-            left: -11em !important;
-        }
-    }
-
     ul {
         float: left;
     }
@@ -110,11 +94,7 @@
         z-index: 9;
         width: 10em;
         height: 100%;
-        //background-color: #FFCC99;
-        background: -webkit-linear-gradient(left, #FFCC99 95%, #FFBB88);
-        background: -o-linear-gradient(left, #FFCC99 95%, #FFBB88);
-        background: -moz-linear-gradient(left, #FFCC99 95%, #FFBB88);
-        background: linear-gradient(left, #FFCC99 95%, #FFBB88);
+        min-height: 30em;
         padding: 0.5em;
         margin: 0em;
         -webkit-transition: left 0.5s;
@@ -122,7 +102,7 @@
     }
     .nav li {
         padding: 0.5em;
-        border-bottom: 1px solid white;
+        border-bottom: 1px solid #ffffff;
         font-weight: bold;
     }
     .nav li a {
@@ -133,21 +113,34 @@
         padding: 0em;
         margin-top: 0em;
         width: 100%;
+        min-width: 350px;
     }
     #entries li {
         list-style: none;
         background-color: #99CCFF;
-        padding: 0.7em;
+        padding: 0em;
         margin: 0em;
         margin-bottom: 0.2em;
     }
-    #entries li h4 {
-        margin: 0em;
+    #entries h4, #entries p {
         padding: 0em;
+        margin: 0em;
     }
-    #entries li p {
-        margin: 0em;
-        padding: 0em;
+    #entries li .when {
+        display: inline-block;
+        vertical-align: top;
+        text-align: right;
+        margin: 0.5em;
+        padding: 0.5em;
+    }
+    #entries li .what {
+        display: inline-block;
+        margin: 0.5em;
+        padding: 0.5em;
+        margin-left: 0em;
+        padding-left: 1em;
+        border-left: 1px solid #ffffff;
+        width: 70%;
     }
 
     .what a img {
@@ -162,6 +155,34 @@
 
     #twitter-widget-0 {
         max-width: inherit !important;
+    }
+
+    @media screen and (max-width: 767px){
+        .nav {
+            box-shadow: 2px 2px 2px #999;
+            background: -webkit-linear-gradient(left, #FFCC99 95%, #FFBB88);
+            background: -o-linear-gradient(left, #FFCC99 95%, #FFBB88);
+            background: -moz-linear-gradient(left, #FFCC99 95%, #FFBB88);
+            background: linear-gradient(left, #FFCC99 95%, #FFBB88);
+        }
+        #entries li .when {
+            width: 2.4em;
+        }
+    }
+
+    @media screen and (min-width: 768px){
+        main {
+            position: absolute;
+            left: 11em;
+            right: 0em;
+        }
+        .nav {
+            left: -11em !important;
+            background-color: #FFCC99;
+        }
+        #entries li .when {
+            width: 6em;
+        }
     }
 
     </style>
