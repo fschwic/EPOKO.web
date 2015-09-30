@@ -123,6 +123,18 @@
         text-decoration: none;
     }
 
+    #teaser {
+        padding: 0.5em;
+        color: #ffffff;
+        background-image: url(img/blur.png);
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+
+    #offlinemsg {
+        display: none;
+    }
+
     #entries {
         padding: 0em;
         margin-top: 0em;
@@ -171,6 +183,23 @@
         max-width: inherit !important;
     }
 
+    #organize {
+        padding: 0.5em;
+    }
+
+    #organize h2 {
+        margin-bottom: 0em;
+    }
+
+    #organize div {
+        display: inline-block;
+        width: 16em;
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 1em;
+    }
+
     @media screen and (max-width: 767px){
         .nav {
             box-shadow: 2px 2px 2px #999;
@@ -212,6 +241,7 @@
         window.xOnLine = true;
         $('.network-status').text("Online");
         $('#twitter').css('display', 'block');
+        $('#offlinemsg').css('display', 'none');
         //EPOKO.sendFails();
 
       });
@@ -220,6 +250,7 @@
         window.xOnLine = false;
         $('.network-status').text("Offline");
         $('#twitter').css('display', 'none');
+        $('#offlinemsg').css('display', 'block');
       });
 
       var jfnIcs = "http://www.epoko.net/webfile/dav/71c8cdcf465bf7a36ab3de2c38759229/jfn/public.ics&cal_year=2015&cal_month=10&cal_day=6";
@@ -365,7 +396,13 @@
         </ul>
 
         <section id="teaser">
-            <p style="margin: 1em;">Voll Cool! Java Forum Nord in Hannover am 6.10. !!!</p>
+            <p style="margin: 1em;">Das Java Forum Nord ist eine eintägige, 
+                nicht-kommerzielle Konferenz in Norddeutschland mit Themenschwerpunkt 
+                Java für Entwickler und Entscheider. Mit 21 Vorträgen in drei parallelen 
+                Tracks und einer Keynote wird ein vielfältiges Programm zu einem
+                unschlagbaren Preis geboten, der regionale Bezug bietet zudem interessante 
+                Networking-Möglichkeiten.</p>
+            <p id="offlinemsg">Du bist offline!</p>
         </section>
 
         <section id="program">
@@ -375,6 +412,53 @@
         <section id="twitter">
             <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/JavaForumNord" data-widget-id="646770499444428801">Tweets by @JavaForumNord</a>
             <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        </section>
+
+        <section id="organize">
+            <h2>Organisatoren</h2>
+
+            <div>
+            <a href="http://www.jugbremen.de" target="_blank">
+              <img src="img/jug_bremen.png"/><br />
+              JUG Bremen
+            </a>
+            </div>
+            <div>
+            <a href="http://www.java.de" target="_blank">
+              <img src="img/jug_deutschland.png"/><br />
+              JUG Deutschland e.V. (G&ouml;ttingen)
+            </a>
+            </div>
+            <div>
+            <a href="http://www.jughh.de" target="_blank">
+              <img src="img/jug_hamburg.png"/><br />
+              JUG Hamburg
+            </a>
+            </div>
+            <div>
+            <a href="http://www.jug-h.de" target="_blank">
+              <img src="img/jug_hannover.png"/><br />
+              JUG Hannover
+            </a>
+            </div>
+            <div>
+            <a href="http://www.jugh.de" target="_blank">
+              <img src="img/jug_hessen.png"/><br />
+              JUG Hessen (Kassel)
+            </a>
+            </div>
+            <div>
+            <a href="http://www.jug-ostfalen.de/" target="_blank">
+              <img src="img/jug_ostfalen.png"/><br />
+              JUG Ostfalen
+            </a>
+            </div>
+            <div>
+            <a href="http://www.sugd.de" target="_blank">
+              <img src="img/sug_deutschland.png"/><br />
+              Sun User Group Deutschland e.V.
+            </a>
+            </div>
         </section>
 
     </main>
