@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 2015.3
+# 2015.4
 
 # Explicitly cached 'master entries'.
 CACHE:
@@ -7,6 +7,15 @@ CACHE:
 ../js/EPOKO.js
 css/index.css
 glyphicons/png/glyphicons-517-menu-hamburger.png
+jfn/icons/apple-touch-icon-114x114.png
+jfn/icons/apple-touch-icon-120x120.png
+jfn/icons/apple-touch-icon-144x144.png
+jfn/icons/apple-touch-icon-152x152.png
+jfn/icons/apple-touch-icon-180x180.png
+jfn/icons/apple-touch-icon-57x57.png
+jfn/icons/apple-touch-icon-72x72.png
+jfn/icons/apple-touch-icon-76x76.png
+jfn/icons/favicon.ico
 img/logo.png
 
 # Resources that require the user to be online.
