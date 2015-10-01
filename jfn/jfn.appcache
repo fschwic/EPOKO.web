@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# 2015.5
+# 2015.6
 
 # Explicitly cached 'master entries'.
 CACHE:
@@ -17,6 +17,13 @@ icons/apple-touch-icon-72x72.png
 icons/apple-touch-icon-76x76.png
 icons/favicon.ico
 img/logo.png
+img/jug_bremen.png
+img/jug_deutschland.png
+img/jug_hamburg.png
+img/jug_hannover.png
+img/jug_hessen.png
+img/jug_ostfalen.png
+img/sug_deutschland.png
 
 # Resources that require the user to be online.
 NETWORK:

@@ -26,13 +26,17 @@
 
     <style type="text/css">
     /* 
-    light orange #FFCC99
+    light orange #FFCC99 FFBB88
     light blue #99CCFF
     light green #CCFFCC
     font blue #08b4da
     font black #1A1A1A
     font white #ffffff
     link blue #00a8d6
+
+    leuchtturm orange f08022
+    logo blau 317a9a
+    jfn headline blue 08b4da
 
     Polizei Blau 004C91
     Polizei Grün 006F43
@@ -47,7 +51,7 @@
     }
 
     header {
-        background-color: #CCFFCC;
+        background-color: #08b4da;
         height: 3em;
         overflow: hidden;
         padding: 0em;
@@ -95,6 +99,18 @@
         right: 0em;
     }
 
+    footer {
+        position: absolute;
+        bottom: 0em;
+        text-align: center;
+        padding: 0.5em;
+        font-size: 0.8125em;
+    }
+
+    footer div {
+        margin-bottom: 0.5em;
+    }
+
     ul {
         float: left;
     }
@@ -121,10 +137,13 @@
     }
     .nav li a {
         text-decoration: none;
+        display: block;
+        color: #1A1A1A;
     }
 
     #teaser {
         padding: 0.5em;
+        margin-bottom: 0.2em;
         color: #ffffff;
         background-image: url(img/blur.png);
         background-size: cover;
@@ -143,7 +162,7 @@
     }
     #entries li {
         list-style: none;
-        background-color: #99CCFF;
+        background-color: #ececec;
         padding: 0em;
         margin: 0em;
         margin-bottom: 0.2em;
@@ -203,10 +222,10 @@
     @media screen and (max-width: 767px){
         .nav {
             box-shadow: 2px 2px 2px #999;
-            background: -webkit-linear-gradient(left, #FFCC99 95%, #FFBB88);
-            background: -o-linear-gradient(left, #FFCC99 95%, #FFBB88);
-            background: -moz-linear-gradient(left, #FFCC99 95%, #FFBB88);
-            background: linear-gradient(left, #FFCC99 95%, #FFBB88);
+            background: -webkit-linear-gradient(left, #dbdbdb 95%, #cacaca);
+            background: -o-linear-gradient(left, #dbdbdb 95%, #cacaca);
+            background: -moz-linear-gradient(left, #dbdbdb 95%, #cacaca);
+            background: linear-gradient(left, #dbdbdb 95%, #cacaca);
         }
         #entries li .when {
             width: 2.4em;
@@ -221,7 +240,7 @@
         }
         .nav {
             left: -11em !important;
-            background-color: #FFCC99;
+            background-color: #dbdbdb;
         }
         #entries li .when {
             width: 6em;
@@ -393,9 +412,16 @@
             <li><a href="#" onClick="changeView(jfnIcsTrack2);">Track 2</a></li>
             <li><a href="#" onClick="changeView(jfnIcsTrack3);">Track 3</a></li>
             <li><a href="#" onClick="changeView(jfnIcsRestaurant);">Restaurant</a></li>
+            <footer>
+                <div>© Java-Forum-Nord.de</div>
+                <div>@JavaForumNord</div>
+                <div>office@java.de</div>
+                <div>Java User Group Deutschland e. V.</div>
+            </footer>
         </ul>
 
         <section id="teaser">
+            <p style="margin: 1em;">Am 6. Oktober im Hotel Plaza, Hannover, direkt am Hauptbahnhof.</p> 
             <p style="margin: 1em;">Das Java Forum Nord ist eine eintägige, 
                 nicht-kommerzielle Konferenz in Norddeutschland mit Themenschwerpunkt 
                 Java für Entwickler und Entscheider. Mit 21 Vorträgen in drei parallelen 
@@ -462,9 +488,6 @@
         </section>
 
     </main>
-
-    <footer>
-    </footer>
 
     <script type="text/javascript">
 
