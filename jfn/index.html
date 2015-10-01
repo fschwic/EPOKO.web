@@ -247,6 +247,28 @@
         }
     }
 
+    @media screen and (min-width: 400px){
+        .title .long {
+            display: block;
+            visibility: visible;
+        }
+        .title .short {
+            display: none;
+            visibility: hidden;
+        }
+    }
+
+    @media screen and (max-width: 399px){
+        .title .long {
+            display: none;
+            visibility: hidden;
+        }
+        .title .short {
+            display: block;
+            visibility: visible;
+        }
+    }
+
     </style>
 
     <script src="../js/jquery-1.7.1.min.js"></script>
@@ -399,7 +421,10 @@
 
     <header>
         <span class="menu-icon glyphicon glyphicon-menu-hamburger"><img src="glyphicons/png/glyphicons-517-menu-hamburger.png"></span>
-        <span class="title"><h1>Java Forum Nord</h1></span>
+        <span class="title">
+            <h1 class="long">Java Forum Nord</h1>
+            <h1 class="short">JFN 15</h1>
+        </span>
         <img class="logo" src="img/logo.png">
     </header>
 
