@@ -143,12 +143,21 @@
     }
 
     #teaser {
-        padding: 0.5em;
+        padding: 1em;
         margin-bottom: 0.2em;
         color: #ffffff;
         background-image: url(img/blur.png);
         background-size: cover;
         background-repeat: no-repeat;
+    }
+
+    #teaser p {
+        font-weight: lighter;
+    }
+
+    #teaser p strong {
+        font-size: 1.25em;
+        font-weight: bolder;
     }
 
     #offlinemsg {
@@ -247,34 +256,6 @@
             width: 6em;
         }
     }
-
-        .title .short {
-            display: none;
-            visibility: hidden;
-        }
-    /*
-    @media screen and (min-width: 400px){
-        .title .long {
-            display: block;
-            visibility: visible;
-        }
-        .title .short {
-            display: none;
-            visibility: hidden;
-        }
-    }
-
-    @media screen and (max-width: 399px){
-        .title .long {
-            display: none;
-            visibility: hidden;
-        }
-        .title .short {
-            display: block;
-            visibility: visible;
-        }
-    }
-    */
 
     </style>
 
@@ -429,8 +410,7 @@
     <header>
         <span class="menu-icon glyphicon glyphicon-menu-hamburger"><img src="glyphicons/png/glyphicons-517-menu-hamburger.png"></span>
         <span class="title">
-            <h1 class="long">Java Forum Nord</h1>
-            <h1 class="short">JFN 15</h1>
+            <h1>Java Forum Nord</h1>
         </span>
         <img class="logo" src="img/logo.png">
     </header>
@@ -438,7 +418,7 @@
     <main>
 
         <ul class="nav">
-            <li><a href="#" onClick="changeView(jfnIcsCurrentHour, true);">Home</a></li>
+            <li><a href="#" onClick="changeView(jfnIcsCurrentHour, true);">Aktuell</a></li>
             <li><a href="#" onClick="changeView(jfnIcs);">Alle Vorträge</a></li>
             <li><a href="#" onClick="changeView(jfnIcsTrack1);">Track 1</a></li>
             <li><a href="#" onClick="changeView(jfnIcsTrack2);">Track 2</a></li>
@@ -449,19 +429,19 @@
                 <div>@JavaForumNord</div>
                 <div>office@java.de</div>
                 <div>Java User Group Deutschland e. V.</div>
-                <div>v0.1 836</div>
+                <div>v0.1 837</div>
             </footer>
         </ul>
 
         <section id="teaser">
-            <p style="margin: 1em;">Am 6. Oktober im Hotel Plaza, Hannover, direkt am Hauptbahnhof.</p> 
-            <p style="margin: 1em;">Das Java Forum Nord ist eine eintägige, 
+            <p>Am <strong>6. Oktober</strong> im <strong>Hotel Plaza, Hannover</strong>, direkt am Hauptbahnhof.</p>
+            <p>Das Java Forum Nord ist eine eintägige, 
                 nicht-kommerzielle Konferenz in Norddeutschland mit Themenschwerpunkt 
                 Java für Entwickler und Entscheider. Mit 21 Vorträgen in drei parallelen 
                 Tracks und einer Keynote wird ein vielfältiges Programm zu einem
                 unschlagbaren Preis geboten, der regionale Bezug bietet zudem interessante 
                 Networking-Möglichkeiten.</p>
-            <p id="offlinemsg">Du bist offline!</p>
+            <p id="offlinemsg">Eine Internetverbindung ist zur Zeit nicht möglich. Sobald die Verbindung wieder hergestellt wurde, werden Daten aktualisiert.</p>
         </section>
 
         <section id="program">
