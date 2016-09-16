@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" sizes="57x57" href="icons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="icons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="icons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="icons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="icons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="icons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="icons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon-180x180.png">
+
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <title>Wochenplaner</title>
+
+    <!-- CSS -->
+
+    <style type="text/css">
+    </style>
+
+    <!-- JAVASCRIPT -->
+
+    <script src="../js/jquery-1.7.1.min.js"></script>
+    <script src="../js/EPOKO.js"></script>
+
+    <script type="application/javascript" language="JavaScript">
+
+    // OFFLINE HANDLING
+    window.xOnLine = true;
+      $(document).on('online', function (event) {
+        console.log('You are online!');
+        window.xOnLine = true;
+        $('.network-status').text("Online");
+        $('#offlinemsg').css('display', 'none');
+        //EPOKO.sendFails();
+    });
+    $(document).on('offline', function (event) {
+        console.log('You are offline!');
+        window.xOnLine = false;
+        $('.network-status').text("Offline");
+        $('#offlinemsg').css('display', 'block');
+    });
+
+
+    var curDate, curYear, curMonth, curDay, lastMonday;
+    var veventDomEntries = [];
+
+    // LOGIC to be moved
+
+    function initializeDates(today){
+        curDate = today;
+        console.log("today " + today.getDate());
+        curYear = today.getFullYear();
+        curMonth = today.getMonth()+1;
+        curDay = today.getDate();
+        lastMonday = curDay + 1 - today.getDay();
+        highlightToday(today);
+
+        var fromDate, toDate;
+        fromDate = new Date(curDate);
+        fromDate.setDate(lastMonday);
+        toDate = new Date(curDate);
+        toDate.setDate(lastMonday + 6);
+        $('#weekTitle').text(fromDate.toLocaleDateString() + " - " + toDate.toLocaleDateString());
+    }
+
+    function highlightToday(day){
+        // clear
+        $('th').css('background-color', "");
+        $('td').css('background-color', "");
+
+        var today = new Date();
+        if( today.getFullYear() == day.getFullYear() &&
+            today.getMonth() == day.getMonth() &&
+            today.getDate() == day.getDate() ){
+            var num = day.getDay();
+            console.log("highlight " + num);
+            $('th[id^="' + num + '"]').css('background-color', "#ffcccc");
+            $('td[id^="' + num + '"]').css('background-color', "#ffcccc");
+        }
+    }
+
+    function fill(){
+        var icsSources = loadIcsSources();
+        $('.vevent').remove();
+        veventDomEntries = [];
+        $.each(icsSources, function(index, icsSource){
+            icsSource += "&cal_year=" + curYear + "&cal_month=" + curMonth + "&cal_day=" + lastMonday + "&cal_length=1W";
+
+            E.getHttp(icsSource, null, showEntries, function(e){
+                    console.log(e)
+                });
+        });
+    }
+
+    function showEntries(data){
+        console.log("showEntries");
+        console.log(data);
+        //data.sort(dateAscComperator);
+
+        $.each(data, function(index, entry){
+            console.log("mon" + lastMonday + " " + entry.dtstart.ics + " " + entry.dtend.ics);
+            var entryDate = new Date(entry.dtstart.ics.substring(0,4),entry.dtstart.ics.substring(4,6)-1,entry.dtstart.ics.substring(6,8));
+            var weekDay = entryDate.getDay();
+            var timeStart = entry.dtstart.ics.substring(9,13);
+            var timeEnd = entry.dtend.ics.substring(9,13);
+            var wpStartId = "" + weekDay + timeStart;
+            var wpEndId = "" + weekDay + timeEnd;
+
+            addEntry(false, wpStartId, wpEndId, entry.uid, entry.dtstart.rfc822, entry.dtend.rfc822, entry.summary, entry.description, entry.location, entry.url, entry.categories[0]);
+        });
+    }
+
+    function addEntry(isUpdate, startfield, endfield, id, start, end, summary, description, location, url, category){
+        var padding = 3;
+        console.log('#' + startfield + " " + summary + " " + endfield);
+        var pos = $('#' + startfield).offset();
+        var width = $('#' + startfield).width();
+        var height = $('#' + endfield).offset().top - pos.top;
+        console.log(startfield + " " + pos.left + "x" + pos.top);
+
+        var entry = $('<div class="vevent cat-' + category + '" id="' + id + '" data-start="' + startfield + '" data-end="' + endfield + '"><h3>' + summary + '</h3><p>' + description + '</p></div>');
+        $('body').append(entry);
+
+        var overlaps = findOverlappingDomEntries(startfield, endfield);
+        if( overlaps.length > 0 ){
+            width = width / (overlaps.length + 1);
+            $.each(overlaps, function(index, entry){
+                entry.css('left', pos.left + padding + index * width);
+                entry.css('width', width - 2*padding);
+            });
+        }
+
+        entry.css('position', 'absolute');
+        entry.css('left', pos.left + padding + overlaps.length * width);
+        entry.css('top', pos.top + padding);
+        entry.css('width', width - 2*padding);
+        entry.css('height', height - 2*padding);
+
+        veventDomEntries.push(entry);
+    }
+
+    function findOverlappingDomEntries(start, end){
+        var result = new Array();
+        $.each(veventDomEntries, function(index, entry){
+            if( entry.data('start') <= start && start < entry.data('end') ||
+                entry.data('start') < end   && end   < entry.data('end') ||
+                start != end && end == entry.data('end') ){
+                result.push(entry);
+            }
+        });
+        return result;
+    }
+
+    function loadIcsSources(){
+        var url = window.location.href;
+        var givenIcsSource = "";
+        if(url.indexOf('#') > 0){
+            url.substring(url.indexOf('#')+1);
+        }
+
+        var icsSources;
+        var store = localStorage.getItem('icsSources');
+        if( store ){
+            icsSources = JSON.parse(store);
+        }
+        else {
+            icsSources = [];
+        }
+
+        if ( givenIcsSource.length && icsSources.indexOf(givenIcsSource) < 0){
+            icsSources.push(givenIcsSource);
+            localStorage.setItem('icsSources', JSON.stringify(icsSources));
+        }
+
+        return icsSources;
+    }
+
+    function previousWeek(){
+        curDate.setDate(curDate.getDate()-7);
+        initializeDates(curDate);
+        fill();
+    }
+
+    function nextWeek(){
+        curDate.setDate(curDate.getDate()+7);
+        initializeDates(curDate);
+        fill();
+    }
+    
+      // copied
+      function dateAscComperator(a, b){
+        var keyA = a.dtstart.ics;
+        var keyB = b.dtstart.ics;
+        if(keyA === keyB){
+            return a.location > b.location ? 1 : -1;
+        }
+        return (keyA > keyB) ? 1 : -1;
+      }
+
+      // to be added after prefetching
+      function updateTalkListHandler(data){
+        data.sort(dateAscComperator);
+        var pref;
+        var entriesInUpdate = [];
+
+        $.each(data, function(index, entry){
+            if($('#' + entry.uid).length){
+                // entry from update currently in DOM
+                console.log("Updating view for " + entry.uid);
+                $('#' + entry.uid).empty();
+                appendTalkListView(true, entry.uid, entry.dtstart.rfc822, entry.dtend.rfc822, entry.summary, entry.location, entry.url);
+            }
+            else{
+                // entry should be added
+                console.log("Entry " + entry.uid + " should be added.");
+                appendTalkListView(false, entry.uid, entry.dtstart.rfc822, entry.dtend.rfc822, entry.summary, entry.location, entry.url);
+            }
+            pref = entry.uid;
+            entriesInUpdate.push(entry.uid);
+        });
+
+        // remove no longer existing entries
+        $.each($('#entries li'), function(index, entry){
+            if( $.inArray(entry.id, entriesInUpdate) < 0 ){
+                console.log("Removing from view " + entry.id);
+                $('#' + entry.id).remove();
+            }
+        });
+      }
+
+      function appendTalkListView(isUpdate, id, start, end, summary, location, url){
+        if(!isUpdate){
+            $('#entries').append('<li id="' + id + '"></li>');
+        }
+        $('#' + id).append('<div class="when">' + start.substr(16,5) + ' - ' + end.substr(16,5) + '</div>' + 
+            '<div class="what">' + 
+            '<h4>' + summary + '</h4>' + 
+            '<span>' + location + '</span>' +
+            '<a href="' + url + '"><img src="glyphicons/png/glyphicons-51-link.png"></a>' +
+            '</div>');
+      }
+
+      function showError(err){
+        console.log(err);
+      }
+
+      function changeView(url, displayExtras){
+        if(displayExtras){
+            $('#teaser').css('display', 'block');
+            if(window.xOnLine){
+                $('#twitter').css('display', 'block');
+            }
+        }
+        else{
+            $('#teaser').css('display', 'none');
+            $('#twitter').css('display', 'none');
+        }
+        E.get(url, null, showEntries, showError);        
+      }
+
+      function externalLink(e){
+        var url = $(e).attr('href');
+        window.open(url, '_system', '');
+        return false;
+      }
+
+    </script>
+
+</head>
+<body>
+
+    <header>
+        <span class="menu-icon glyphicon glyphicon-menu-hamburger"><img src="../glyphicons/png/glyphicons-517-menu-hamburger.png"></span>
+        <span class="title">
+            <h1>EPOKO Week</h1>
+        </span>
+    </header>
+
+    <main>
+
+        <ul class="nav">
+            <li><a href="#" onClick="changeView(jfnIcsCurrentHour, true);">Aktuell</a></li>
+            <li><a href="#" onClick="changeView(jfnIcs);">Alle Vorträge</a></li>
+            <li><a href="#" onClick="changeView(jfnIcsTrack1);">Track 1</a></li>
+            <li><a href="#" onClick="changeView(jfnIcsTrack2);">Track 2</a></li>
+            <li><a href="#" onClick="changeView(jfnIcsTrack3);">Track 3</a></li>
+            <li><a href="#" onClick="changeView(jfnIcsRestaurant);">Restaurant</a></li>
+            <footer>
+                <div>© Java-Forum-Nord.de</div>
+                <div>@JavaForumNord</div>
+                <div>office@java.de</div>
+                <div>Java User Group Deutschland e. V.</div>
+                <div>v0.1 840</div>
+            </footer>
+        </ul>
+
+        <section id="teaser">
+            <p id="offlinemsg">Eine Internetverbindung ist zur Zeit nicht möglich. Sobald die Verbindung wieder hergestellt wurde, werden Daten aktualisiert.</p>
+        </section>
+
+        <section id="program">
+            <table id="wp" border="1">
+                <caption>
+                    <span id="toPrev">zurück</span>
+                    <h1 id="weekTitle">Aktuelle Woche</h1>
+                    <span id="toNext">vor</span>
+                </caption>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th class="dayhead" id="10000">Montag</th>
+                        <th class="dayhead" id="20000">Dienstag</th>
+                        <th class="dayhead" id="30000">Mittwoch</th>
+                        <th class="dayhead" id="40000">Donnerstag</th>
+                        <th class="dayhead" id="50000">Freitag</th>
+                        <th class="dayhead" id="60000">Samstag</th>
+                        <th class="dayhead" id="70000">Sonntag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th class="hourhead" rowspan="4">7:00</th>
+                        <td class="quarterbox" id="10700"></td>
+                        <td class="quarterbox" id="20700"></td>
+                        <td class="quarterbox" id="30700"></td>
+                        <td class="quarterbox" id="40700"></td>
+                        <td class="quarterbox" id="50700"></td>
+                        <td class="quarterbox" id="60700"></td>
+                        <td class="quarterbox" id="70700"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="10715"></td>
+                        <td class="quarterbox" id="20715"></td>
+                        <td class="quarterbox" id="30715"></td>
+                        <td class="quarterbox" id="40715"></td>
+                        <td class="quarterbox" id="50715"></td>
+                        <td class="quarterbox" id="60715"></td>
+                        <td class="quarterbox" id="70715"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="10730"></td>
+                        <td class="quarterbox" id="20730"></td>
+                        <td class="quarterbox" id="30730"></td>
+                        <td class="quarterbox" id="40730"></td>
+                        <td class="quarterbox" id="50730"></td>
+                        <td class="quarterbox" id="60730"></td>
+                        <td class="quarterbox" id="70730"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="10745"></td>
+                        <td class="quarterbox" id="20745"></td>
+                        <td class="quarterbox" id="30745"></td>
+                        <td class="quarterbox" id="40745"></td>
+                        <td class="quarterbox" id="50745"></td>
+                        <td class="quarterbox" id="60745"></td>
+                        <td class="quarterbox" id="70745"></td>
+                    </tr>
+                    <tr>
+                        <th class="hourhead" rowspan="4">8:00</th>
+                        <td class="quarterbox" id="10800"></td>
+                        <td class="quarterbox" id="20800"></td>
+                        <td class="quarterbox" id="30800"></td>
+                        <td class="quarterbox" id="40800"></td>
+                        <td class="quarterbox" id="50800"></td>
+                        <td class="quarterbox" id="60800"></td>
+                        <td class="quarterbox" id="70800"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="10815"></td>
+                        <td class="quarterbox" id="20815"></td>
+                        <td class="quarterbox" id="30815"></td>
+                        <td class="quarterbox" id="40815"></td>
+                        <td class="quarterbox" id="50815"></td>
+                        <td class="quarterbox" id="60815"></td>
+                        <td class="quarterbox" id="70815"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="10830"></td>
+                        <td class="quarterbox" id="20830"></td>
+                        <td class="quarterbox" id="30830"></td>
+                        <td class="quarterbox" id="40830"></td>
+                        <td class="quarterbox" id="50830"></td>
+                        <td class="quarterbox" id="60830"></td>
+                        <td class="quarterbox" id="70830"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="10845"></td>
+                        <td class="quarterbox" id="20845"></td>
+                        <td class="quarterbox" id="30845"></td>
+                        <td class="quarterbox" id="40845"></td>
+                        <td class="quarterbox" id="50845"></td>
+                        <td class="quarterbox" id="60845"></td>
+                        <td class="quarterbox" id="70845"></td>
+                    </tr>
+                    <tr>
+                        <th class="hourhead" rowspan="4">9:00</th>
+                        <td class="quarterbox" id="10900"></td>
+                        <td class="quarterbox" id="20900"></td>
+                        <td class="quarterbox" id="30900"></td>
+                        <td class="quarterbox" id="40900"></td>
+                        <td class="quarterbox" id="50900"></td>
+                        <td class="quarterbox" id="60900"></td>
+                        <td class="quarterbox" id="70900"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="10915"></td>
+                        <td class="quarterbox" id="20915"></td>
+                        <td class="quarterbox" id="30915"></td>
+                        <td class="quarterbox" id="40915"></td>
+                        <td class="quarterbox" id="50915"></td>
+                        <td class="quarterbox" id="60915"></td>
+                        <td class="quarterbox" id="70915"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="10930"></td>
+                        <td class="quarterbox" id="20930"></td>
+                        <td class="quarterbox" id="30930"></td>
+                        <td class="quarterbox" id="40930"></td>
+                        <td class="quarterbox" id="50930"></td>
+                        <td class="quarterbox" id="60930"></td>
+                        <td class="quarterbox" id="70930"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="10945"></td>
+                        <td class="quarterbox" id="20945"></td>
+                        <td class="quarterbox" id="30945"></td>
+                        <td class="quarterbox" id="40945"></td>
+                        <td class="quarterbox" id="50945"></td>
+                        <td class="quarterbox" id="60945"></td>
+                        <td class="quarterbox" id="70945"></td>
+                    </tr>
+                    <tr>
+                        <th class="hourhead" rowspan="4">10:00</th>
+                        <td class="quarterbox" id="11000"></td>
+                        <td class="quarterbox" id="21000"></td>
+                        <td class="quarterbox" id="31000"></td>
+                        <td class="quarterbox" id="41000"></td>
+                        <td class="quarterbox" id="51000"></td>
+                        <td class="quarterbox" id="61000"></td>
+                        <td class="quarterbox" id="71000"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11015"></td>
+                        <td class="quarterbox" id="21015"></td>
+                        <td class="quarterbox" id="31015"></td>
+                        <td class="quarterbox" id="41015"></td>
+                        <td class="quarterbox" id="51015"></td>
+                        <td class="quarterbox" id="61015"></td>
+                        <td class="quarterbox" id="71015"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11030"></td>
+                        <td class="quarterbox" id="21030"></td>
+                        <td class="quarterbox" id="31030"></td>
+                        <td class="quarterbox" id="41030"></td>
+                        <td class="quarterbox" id="51030"></td>
+                        <td class="quarterbox" id="61030"></td>
+                        <td class="quarterbox" id="71030"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11045"></td>
+                        <td class="quarterbox" id="21045"></td>
+                        <td class="quarterbox" id="31045"></td>
+                        <td class="quarterbox" id="41045"></td>
+                        <td class="quarterbox" id="51045"></td>
+                        <td class="quarterbox" id="61045"></td>
+                        <td class="quarterbox" id="71045"></td>
+                    </tr>
+                    <tr>
+                        <th class="hourhead" rowspan="4">11:00</th>
+                        <td class="quarterbox" id="11100"></td>
+                        <td class="quarterbox" id="21100"></td>
+                        <td class="quarterbox" id="31100"></td>
+                        <td class="quarterbox" id="41100"></td>
+                        <td class="quarterbox" id="51100"></td>
+                        <td class="quarterbox" id="61100"></td>
+                        <td class="quarterbox" id="71100"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11115"></td>
+                        <td class="quarterbox" id="21115"></td>
+                        <td class="quarterbox" id="31115"></td>
+                        <td class="quarterbox" id="41115"></td>
+                        <td class="quarterbox" id="51115"></td>
+                        <td class="quarterbox" id="61115"></td>
+                        <td class="quarterbox" id="71115"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11130"></td>
+                        <td class="quarterbox" id="21130"></td>
+                        <td class="quarterbox" id="31130"></td>
+                        <td class="quarterbox" id="41130"></td>
+                        <td class="quarterbox" id="51130"></td>
+                        <td class="quarterbox" id="61130"></td>
+                        <td class="quarterbox" id="71130"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11145"></td>
+                        <td class="quarterbox" id="21145"></td>
+                        <td class="quarterbox" id="31145"></td>
+                        <td class="quarterbox" id="41145"></td>
+                        <td class="quarterbox" id="51145"></td>
+                        <td class="quarterbox" id="61145"></td>
+                        <td class="quarterbox" id="71145"></td>
+                    </tr>
+                    <tr>
+                        <th class="hourhead" rowspan="4">12:00</th>
+                        <td class="quarterbox" id="11200"></td>
+                        <td class="quarterbox" id="21200"></td>
+                        <td class="quarterbox" id="31200"></td>
+                        <td class="quarterbox" id="41200"></td>
+                        <td class="quarterbox" id="51200"></td>
+                        <td class="quarterbox" id="61200"></td>
+                        <td class="quarterbox" id="71200"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11215"></td>
+                        <td class="quarterbox" id="21215"></td>
+                        <td class="quarterbox" id="31215"></td>
+                        <td class="quarterbox" id="41215"></td>
+                        <td class="quarterbox" id="51215"></td>
+                        <td class="quarterbox" id="61215"></td>
+                        <td class="quarterbox" id="71215"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11230"></td>
+                        <td class="quarterbox" id="21230"></td>
+                        <td class="quarterbox" id="31230"></td>
+                        <td class="quarterbox" id="41230"></td>
+                        <td class="quarterbox" id="51230"></td>
+                        <td class="quarterbox" id="61230"></td>
+                        <td class="quarterbox" id="71230"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11245"></td>
+                        <td class="quarterbox" id="21245"></td>
+                        <td class="quarterbox" id="31245"></td>
+                        <td class="quarterbox" id="41245"></td>
+                        <td class="quarterbox" id="51245"></td>
+                        <td class="quarterbox" id="61245"></td>
+                        <td class="quarterbox" id="71245"></td>
+                    </tr>
+                    <tr>
+                        <th class="hourhead" rowspan="4">13:00</th>
+                        <td class="quarterbox" id="11300"></td>
+                        <td class="quarterbox" id="21300"></td>
+                        <td class="quarterbox" id="31300"></td>
+                        <td class="quarterbox" id="41300"></td>
+                        <td class="quarterbox" id="51300"></td>
+                        <td class="quarterbox" id="61300"></td>
+                        <td class="quarterbox" id="71300"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11315"></td>
+                        <td class="quarterbox" id="21315"></td>
+                        <td class="quarterbox" id="31315"></td>
+                        <td class="quarterbox" id="41315"></td>
+                        <td class="quarterbox" id="51315"></td>
+                        <td class="quarterbox" id="61315"></td>
+                        <td class="quarterbox" id="71315"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11330"></td>
+                        <td class="quarterbox" id="21330"></td>
+                        <td class="quarterbox" id="31330"></td>
+                        <td class="quarterbox" id="41330"></td>
+                        <td class="quarterbox" id="51330"></td>
+                        <td class="quarterbox" id="61330"></td>
+                        <td class="quarterbox" id="71330"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11345"></td>
+                        <td class="quarterbox" id="21345"></td>
+                        <td class="quarterbox" id="31345"></td>
+                        <td class="quarterbox" id="41345"></td>
+                        <td class="quarterbox" id="51345"></td>
+                        <td class="quarterbox" id="61345"></td>
+                        <td class="quarterbox" id="71345"></td>
+                    </tr>
+                    <tr>
+                        <th class="hourhead" rowspan="4">14:00</th>
+                        <td class="quarterbox" id="11400"></td>
+                        <td class="quarterbox" id="21400"></td>
+                        <td class="quarterbox" id="31400"></td>
+                        <td class="quarterbox" id="41400"></td>
+                        <td class="quarterbox" id="51400"></td>
+                        <td class="quarterbox" id="61400"></td>
+                        <td class="quarterbox" id="71400"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11415"></td>
+                        <td class="quarterbox" id="21415"></td>
+                        <td class="quarterbox" id="31415"></td>
+                        <td class="quarterbox" id="41415"></td>
+                        <td class="quarterbox" id="51415"></td>
+                        <td class="quarterbox" id="61415"></td>
+                        <td class="quarterbox" id="71415"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11430"></td>
+                        <td class="quarterbox" id="21430"></td>
+                        <td class="quarterbox" id="31430"></td>
+                        <td class="quarterbox" id="41430"></td>
+                        <td class="quarterbox" id="51430"></td>
+                        <td class="quarterbox" id="61430"></td>
+                        <td class="quarterbox" id="71430"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11445"></td>
+                        <td class="quarterbox" id="21445"></td>
+                        <td class="quarterbox" id="31445"></td>
+                        <td class="quarterbox" id="41445"></td>
+                        <td class="quarterbox" id="51445"></td>
+                        <td class="quarterbox" id="61445"></td>
+                        <td class="quarterbox" id="71445"></td>
+                    </tr>
+                    <tr>
+                        <th class="hourhead" rowspan="4">15:00</th>
+                        <td class="quarterbox" id="11500"></td>
+                        <td class="quarterbox" id="21500"></td>
+                        <td class="quarterbox" id="31500"></td>
+                        <td class="quarterbox" id="41500"></td>
+                        <td class="quarterbox" id="51500"></td>
+                        <td class="quarterbox" id="61500"></td>
+                        <td class="quarterbox" id="71500"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11515"></td>
+                        <td class="quarterbox" id="21515"></td>
+                        <td class="quarterbox" id="31515"></td>
+                        <td class="quarterbox" id="41515"></td>
+                        <td class="quarterbox" id="51515"></td>
+                        <td class="quarterbox" id="61515"></td>
+                        <td class="quarterbox" id="71515"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11530"></td>
+                        <td class="quarterbox" id="21530"></td>
+                        <td class="quarterbox" id="31530"></td>
+                        <td class="quarterbox" id="41530"></td>
+                        <td class="quarterbox" id="51530"></td>
+                        <td class="quarterbox" id="61530"></td>
+                        <td class="quarterbox" id="71530"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11545"></td>
+                        <td class="quarterbox" id="21545"></td>
+                        <td class="quarterbox" id="31545"></td>
+                        <td class="quarterbox" id="41545"></td>
+                        <td class="quarterbox" id="51545"></td>
+                        <td class="quarterbox" id="61545"></td>
+                        <td class="quarterbox" id="71545"></td>
+                    </tr>
+                    <tr>
+                        <th class="hourhead" rowspan="4">16:00</th>
+                        <td class="quarterbox" id="11600"></td>
+                        <td class="quarterbox" id="21600"></td>
+                        <td class="quarterbox" id="31600"></td>
+                        <td class="quarterbox" id="41600"></td>
+                        <td class="quarterbox" id="51600"></td>
+                        <td class="quarterbox" id="61600"></td>
+                        <td class="quarterbox" id="71600"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11615"></td>
+                        <td class="quarterbox" id="21615"></td>
+                        <td class="quarterbox" id="31615"></td>
+                        <td class="quarterbox" id="41615"></td>
+                        <td class="quarterbox" id="51615"></td>
+                        <td class="quarterbox" id="61615"></td>
+                        <td class="quarterbox" id="71615"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11630"></td>
+                        <td class="quarterbox" id="21630"></td>
+                        <td class="quarterbox" id="31630"></td>
+                        <td class="quarterbox" id="41630"></td>
+                        <td class="quarterbox" id="51630"></td>
+                        <td class="quarterbox" id="61630"></td>
+                        <td class="quarterbox" id="71630"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11645"></td>
+                        <td class="quarterbox" id="21645"></td>
+                        <td class="quarterbox" id="31645"></td>
+                        <td class="quarterbox" id="41645"></td>
+                        <td class="quarterbox" id="51645"></td>
+                        <td class="quarterbox" id="61645"></td>
+                        <td class="quarterbox" id="71645"></td>
+                    </tr>
+                    <tr>
+                        <th class="hourhead" rowspan="4">17:00</th>
+                        <td class="quarterbox" id="11700"></td>
+                        <td class="quarterbox" id="21700"></td>
+                        <td class="quarterbox" id="31700"></td>
+                        <td class="quarterbox" id="41700"></td>
+                        <td class="quarterbox" id="51700"></td>
+                        <td class="quarterbox" id="61700"></td>
+                        <td class="quarterbox" id="71700"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11715"></td>
+                        <td class="quarterbox" id="21715"></td>
+                        <td class="quarterbox" id="31715"></td>
+                        <td class="quarterbox" id="41715"></td>
+                        <td class="quarterbox" id="51715"></td>
+                        <td class="quarterbox" id="61715"></td>
+                        <td class="quarterbox" id="71715"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11730"></td>
+                        <td class="quarterbox" id="21730"></td>
+                        <td class="quarterbox" id="31730"></td>
+                        <td class="quarterbox" id="41730"></td>
+                        <td class="quarterbox" id="51730"></td>
+                        <td class="quarterbox" id="61730"></td>
+                        <td class="quarterbox" id="71730"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11745"></td>
+                        <td class="quarterbox" id="21745"></td>
+                        <td class="quarterbox" id="31745"></td>
+                        <td class="quarterbox" id="41745"></td>
+                        <td class="quarterbox" id="51745"></td>
+                        <td class="quarterbox" id="61745"></td>
+                        <td class="quarterbox" id="71745"></td>
+                    </tr>
+                    <tr>
+                        <th class="hourhead" rowspan="4">18:00</th>
+                        <td class="quarterbox" id="11800"></td>
+                        <td class="quarterbox" id="21800"></td>
+                        <td class="quarterbox" id="31800"></td>
+                        <td class="quarterbox" id="41800"></td>
+                        <td class="quarterbox" id="51800"></td>
+                        <td class="quarterbox" id="61800"></td>
+                        <td class="quarterbox" id="71800"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11815"></td>
+                        <td class="quarterbox" id="21815"></td>
+                        <td class="quarterbox" id="31815"></td>
+                        <td class="quarterbox" id="41815"></td>
+                        <td class="quarterbox" id="51815"></td>
+                        <td class="quarterbox" id="61815"></td>
+                        <td class="quarterbox" id="71815"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11830"></td>
+                        <td class="quarterbox" id="21830"></td>
+                        <td class="quarterbox" id="31830"></td>
+                        <td class="quarterbox" id="41830"></td>
+                        <td class="quarterbox" id="51830"></td>
+                        <td class="quarterbox" id="61830"></td>
+                        <td class="quarterbox" id="71830"></td>
+                    </tr>
+                    <tr>
+                        <td class="quarterbox" id="11845"></td>
+                        <td class="quarterbox" id="21845"></td>
+                        <td class="quarterbox" id="31845"></td>
+                        <td class="quarterbox" id="41845"></td>
+                        <td class="quarterbox" id="51845"></td>
+                        <td class="quarterbox" id="61845"></td>
+                        <td class="quarterbox" id="71845"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+    <script type="text/javascript">
+
+        //buildWeekPanel();
+        initializeDates(new Date());
+        fill();
+
+        $('#toPrev').on('click', function(){
+            previousWeek();
+        });
+
+        $('#toNext').on('click', function(){
+            nextWeek();
+        });
+
+        $(window.document).keydown(function (e) { 
+            if(e.keyCode == 37) {
+                // left key
+                previousWeek();
+            }
+            else if(e.keyCode == 39) {
+                // right key
+                nextWeek();
+            }
+            else if(e.keyCode == 38) {
+                // up arrow key
+            }
+            else if(e.keyCode == 40) {
+                // down arrow key
+            }
+            else if(e.keyCode == 32 || e.keyCode == 80 || e.keyCode == 27 || e.keyCode == 19) {
+                // keys: space, p, esc, pause/break
+            }
+        });
+
+      $('.menu-icon').on('click', function(){
+        var nav = $('.nav');
+        var cur = nav.css('left');
+        if(cur.indexOf("0") === 0){
+          $('.nav').css('left', "-11.2em");
+        }
+        else {
+          $('.nav').css('left', "0em");
+        }
+      });
+
+      $('.nav').on('click', function(){
+        $(this).css('left', "-11.2em");
+      });
+
+      $('main').on('click', function(){
+        $('.nav').css('left', "-11.2em");
+      });
+
+    </script>
+</body>
+</html>
