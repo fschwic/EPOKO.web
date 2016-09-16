@@ -166,7 +166,7 @@
         var url = window.location.href;
         var givenIcsSource = "";
         if(url.indexOf('#') > 0){
-            url.substring(url.indexOf('#')+1);
+            givenIcsSource = url.substring(url.indexOf('#')+1);
         }
 
         var icsSources;
