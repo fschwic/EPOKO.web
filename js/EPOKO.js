@@ -103,7 +103,7 @@ var E = (function ($) {
     };
 
 
-    function getHttp(url, id, onSuccess, onFail){
+    E.getHttp = function(url, id, onSuccess, onFail){
         // default fail handler
         var failHandler = function(err){
             console.log("Request to EPOKO service failed!");
