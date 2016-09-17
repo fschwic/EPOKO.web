@@ -53,6 +53,7 @@
 
 
     var curDate, curYear, curMonth, curDay, lastMonday;
+    var icsSources;
     var veventDomEntries = [];
 
     // LOGIC to be moved
@@ -63,7 +64,8 @@
         curYear = today.getFullYear();
         curMonth = today.getMonth()+1;
         curDay = today.getDate();
-        lastMonday = curDay + 1 - today.getDay();
+        lastMonday = curDay + 1 - (today.getDay() == 0 ? 7 : today.getDay());
+        console.log("mon" + lastMonday);
         highlightToday(today);
 
         var fromDate, toDate;
@@ -83,7 +85,7 @@
         if( today.getFullYear() == day.getFullYear() &&
             today.getMonth() == day.getMonth() &&
             today.getDate() == day.getDate() ){
-            var num = day.getDay();
+            var num = (day.getDay() == 0 ? 7 : day.getDay());
             console.log("highlight " + num);
             $('th[id^="' + num + '"]').css('background-color', "#ffcccc");
             $('td[id^="' + num + '"]').css('background-color', "#ffcccc");
@@ -91,7 +93,6 @@
     }
 
     function fill(){
-        var icsSources = loadIcsSources();
         $('.vevent').remove();
         veventDomEntries = [];
         $.each(icsSources, function(index, icsSource){
@@ -109,7 +110,7 @@
         //data.sort(dateAscComperator);
 
         $.each(data, function(index, entry){
-            console.log("mon" + lastMonday + " " + entry.dtstart.ics + " " + entry.dtend.ics);
+            console.log(entry.dtstart.ics + " " + entry.dtend.ics);
             var entryDate = new Date(entry.dtstart.ics.substring(0,4),entry.dtstart.ics.substring(4,6)-1,entry.dtstart.ics.substring(6,8));
             var weekDay = entryDate.getDay();
             var timeStart = entry.dtstart.ics.substring(9,13);
@@ -169,21 +170,26 @@
             givenIcsSource = url.substring(url.indexOf('#')+1);
         }
 
-        var icsSources;
+        var result;
         var store = localStorage.getItem('icsSources');
         if( store ){
-            icsSources = JSON.parse(store);
+            result = JSON.parse(store);
         }
         else {
-            icsSources = [];
+            result = [];
         }
 
-        if ( givenIcsSource.length && icsSources.indexOf(givenIcsSource) < 0){
-            icsSources.push(givenIcsSource);
-            localStorage.setItem('icsSources', JSON.stringify(icsSources));
+        if ( givenIcsSource.length && result.indexOf(givenIcsSource) < 0){
+            result.push(givenIcsSource);
+            localStorage.setItem('icsSources', JSON.stringify(result));
         }
 
-        return icsSources;
+        var nav = $('ul.nav');
+        $.each(result, function(index, icsSource){
+            nav.prepend('<li><a href="#" onClick="toggleSource();">' + icsSource + '</a></li>');
+        });
+
+        icsSources = result;
     }
 
     function previousWeek(){
@@ -278,7 +284,7 @@
     </script>
 
 </head>
-<body>
+<body onResize="fill();">
 
     <header>
         <span class="menu-icon glyphicon glyphicon-menu-hamburger"><img src="../glyphicons/png/glyphicons-517-menu-hamburger.png"></span>
@@ -290,18 +296,11 @@
     <main>
 
         <ul class="nav">
-            <li><a href="#" onClick="changeView(jfnIcsCurrentHour, true);">Aktuell</a></li>
-            <li><a href="#" onClick="changeView(jfnIcs);">Alle Vorträge</a></li>
-            <li><a href="#" onClick="changeView(jfnIcsTrack1);">Track 1</a></li>
-            <li><a href="#" onClick="changeView(jfnIcsTrack2);">Track 2</a></li>
-            <li><a href="#" onClick="changeView(jfnIcsTrack3);">Track 3</a></li>
-            <li><a href="#" onClick="changeView(jfnIcsRestaurant);">Restaurant</a></li>
+            <li><a href="#" onClick="addIcsSource();">Kalender hinzufügen</a></li>
             <footer>
-                <div>© Java-Forum-Nord.de</div>
-                <div>@JavaForumNord</div>
-                <div>office@java.de</div>
-                <div>Java User Group Deutschland e. V.</div>
-                <div>v0.1 840</div>
+                <div>© EPOKO.net</div>
+                <div><a href="http://www.epoko.net">www.EPOKO.net</a></div>
+                <div>v0.1</div>
             </footer>
         </ul>
 
@@ -783,6 +782,7 @@
 
         //buildWeekPanel();
         initializeDates(new Date());
+        loadIcsSources();
         fill();
 
         $('#toPrev').on('click', function(){
@@ -817,7 +817,7 @@
         var nav = $('.nav');
         var cur = nav.css('left');
         if(cur.indexOf("0") === 0){
-          $('.nav').css('left', "-11.2em");
+          $('.nav').css('left', "-15.2em");
         }
         else {
           $('.nav').css('left', "0em");
@@ -825,11 +825,11 @@
       });
 
       $('.nav').on('click', function(){
-        $(this).css('left', "-11.2em");
+        $(this).css('left', "-15.2em");
       });
 
       $('main').on('click', function(){
-        $('.nav').css('left', "-11.2em");
+        $('.nav').css('left', "-15.2em");
       });
 
     </script>
