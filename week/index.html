@@ -114,7 +114,18 @@
             var entryDate = new Date(entry.dtstart.ics.substring(0,4),entry.dtstart.ics.substring(4,6)-1,entry.dtstart.ics.substring(6,8));
             var weekDay = entryDate.getDay();
             var timeStart = entry.dtstart.ics.substring(9,13);
-            var timeEnd = entry.dtend.ics.substring(9,13);
+            if(timeStart.length < 1){
+                // date without time: ganztägig
+                timeStart = "0000";
+            }
+            var timeEnd;
+            if(entry.dtend && entry.dtend.ics && entry.dtend.ics.substring(9,13).length > 0) {
+                timeEnd = entry.dtend.ics.substring(9,13);
+            }
+            else {
+                timeEnd = timeStart;
+            }
+            console.log("end " + timeEnd);
             var wpStartId = "" + weekDay + timeStart;
             var wpEndId = "" + weekDay + timeEnd;
 
