@@ -55,17 +55,17 @@
     var curDate, curYear, curMonth, curDay, lastMonday;
     var icsSources;
     var veventDomEntries = [];
+    var categorySet = [];
+    var categoryColors = ["#ccffcc","#ccccff","#ffffcc","#ffccff","#ccffff","#00aaff","#ffaa00"];
 
     // LOGIC to be moved
 
     function initializeDates(today){
         curDate = today;
-        console.log("today " + today.getDate());
         curYear = today.getFullYear();
         curMonth = today.getMonth()+1;
         curDay = today.getDate();
         lastMonday = curDay + 1 - (today.getDay() == 0 ? 7 : today.getDay());
-        console.log("mon" + lastMonday);
         highlightToday(today);
 
         var fromDate, toDate;
@@ -86,7 +86,6 @@
             today.getMonth() == day.getMonth() &&
             today.getDate() == day.getDate() ){
             var num = (day.getDay() == 0 ? 7 : day.getDay());
-            console.log("highlight " + num);
             $('th[id^="' + num + '"]').css('background-color', "#ffcccc");
             $('td[id^="' + num + '"]').css('background-color', "#ffcccc");
         }
@@ -105,12 +104,11 @@
     }
 
     function showEntries(data){
-        console.log("showEntries");
-        console.log(data);
         //data.sort(dateAscComperator);
 
         $.each(data, function(index, entry){
-            console.log(entry.dtstart.ics + " " + entry.dtend.ics);
+          //console.log(entry.dtstart.ics + " " + entry.dtend.ics);
+          if ( entry.isA == "VEVENT" ){
             var entryDate = new Date(entry.dtstart.ics.substring(0,4),entry.dtstart.ics.substring(4,6)-1,entry.dtstart.ics.substring(6,8));
             var weekDay = entryDate.getDay();
             var timeStart = entry.dtstart.ics.substring(9,13);
@@ -125,21 +123,24 @@
             else {
                 timeEnd = timeStart;
             }
-            console.log("end " + timeEnd);
             var wpStartId = "" + weekDay + timeStart;
             var wpEndId = "" + weekDay + timeEnd;
 
             addEntry(false, wpStartId, wpEndId, entry.uid, entry.dtstart.rfc822, entry.dtend.rfc822, entry.summary, entry.description, entry.location, entry.url, entry.categories[0]);
+          }
         });
     }
 
     function addEntry(isUpdate, startfield, endfield, id, start, end, summary, description, location, url, category){
         var padding = 3;
-        console.log('#' + startfield + " " + summary + " " + endfield);
+        //console.log('#' + startfield + " " + summary + " " + endfield);
         var pos = $('#' + startfield).offset();
         var width = $('#' + startfield).width();
         var height = $('#' + endfield).offset().top - pos.top;
-        console.log(startfield + " " + pos.left + "x" + pos.top);
+        //console.log(startfield + " " + pos.left + "x" + pos.top);
+        if ( category && category.length && categorySet.indexOf(category) < 0){
+            categorySet.push(category);
+        }
 
         var entry = $('<div class="vevent cat-' + category + '" id="' + id + '" data-start="' + startfield + '" data-end="' + endfield + '"><h3>' + summary + '</h3><p>' + description + '</p></div>');
         $('body').append(entry);
@@ -153,6 +154,9 @@
             });
         }
 
+        if( category && category.length ){
+            entry.css('background-color', categoryColors[categorySet.indexOf(category)]);
+        }
         entry.css('position', 'absolute');
         entry.css('left', pos.left + padding + overlaps.length * width);
         entry.css('top', pos.top + padding);
